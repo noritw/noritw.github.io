@@ -468,7 +468,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,1160,3723);
 
 
 
-(lib.CachedBmp_359 = function() {
+(lib.CachedBmp_362 = function() {
 	this.initialize(ss["E1U2_G36_HTML5_Canvas_atlas_7"]);
 	this.gotoAndStop(29);
 }).prototype = p = new cjs.Sprite();
@@ -482,7 +482,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,1160,3723);
 
 
 
-(lib.CachedBmp_358 = function() {
+(lib.CachedBmp_361 = function() {
 	this.initialize(ss["E1U2_G36_HTML5_Canvas_atlas_7"]);
 	this.gotoAndStop(31);
 }).prototype = p = new cjs.Sprite();
@@ -496,7 +496,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,1160,3723);
 
 
 
-(lib.CachedBmp_357 = function() {
+(lib.CachedBmp_360 = function() {
 	this.initialize(ss["E1U2_G36_HTML5_Canvas_atlas_7"]);
 	this.gotoAndStop(33);
 }).prototype = p = new cjs.Sprite();
@@ -2709,19 +2709,19 @@ if (reversed == null) { reversed = false; }
 	this.instance_15 = new lib.CachedBmp_16();
 	this.instance_15.setTransform(51.05,47.75,0.5,0.5);
 
-	this.instance_16 = new lib.CachedBmp_359();
+	this.instance_16 = new lib.CachedBmp_362();
 	this.instance_16.setTransform(43.75,221.65,0.5,0.5);
 
 	this.instance_17 = new lib.CachedBmp_14();
 	this.instance_17.setTransform(51.05,217.4,0.5,0.5);
 
-	this.instance_18 = new lib.CachedBmp_358();
+	this.instance_18 = new lib.CachedBmp_361();
 	this.instance_18.setTransform(44,131.15,0.5,0.5);
 
 	this.instance_19 = new lib.CachedBmp_12();
 	this.instance_19.setTransform(51.05,131.65,0.5,0.5);
 
-	this.instance_20 = new lib.CachedBmp_357();
+	this.instance_20 = new lib.CachedBmp_360();
 	this.instance_20.setTransform(46.15,33.65,0.5,0.5);
 
 	this.instance_21 = new lib.CachedBmp_10();
