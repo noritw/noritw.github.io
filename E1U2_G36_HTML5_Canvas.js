@@ -468,7 +468,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,1160,3723);
 
 
 
-(lib.CachedBmp_356 = function() {
+(lib.CachedBmp_359 = function() {
 	this.initialize(ss["E1U2_G36_HTML5_Canvas_atlas_7"]);
 	this.gotoAndStop(29);
 }).prototype = p = new cjs.Sprite();
@@ -482,7 +482,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,1160,3723);
 
 
 
-(lib.CachedBmp_355 = function() {
+(lib.CachedBmp_358 = function() {
 	this.initialize(ss["E1U2_G36_HTML5_Canvas_atlas_7"]);
 	this.gotoAndStop(31);
 }).prototype = p = new cjs.Sprite();
@@ -496,7 +496,7 @@ p.nominalBounds = new cjs.Rectangle(0,0,1160,3723);
 
 
 
-(lib.CachedBmp_354 = function() {
+(lib.CachedBmp_357 = function() {
 	this.initialize(ss["E1U2_G36_HTML5_Canvas_atlas_7"]);
 	this.gotoAndStop(33);
 }).prototype = p = new cjs.Sprite();
@@ -2709,19 +2709,19 @@ if (reversed == null) { reversed = false; }
 	this.instance_15 = new lib.CachedBmp_16();
 	this.instance_15.setTransform(51.05,47.75,0.5,0.5);
 
-	this.instance_16 = new lib.CachedBmp_356();
+	this.instance_16 = new lib.CachedBmp_359();
 	this.instance_16.setTransform(43.75,221.65,0.5,0.5);
 
 	this.instance_17 = new lib.CachedBmp_14();
 	this.instance_17.setTransform(51.05,217.4,0.5,0.5);
 
-	this.instance_18 = new lib.CachedBmp_355();
+	this.instance_18 = new lib.CachedBmp_358();
 	this.instance_18.setTransform(44,131.15,0.5,0.5);
 
 	this.instance_19 = new lib.CachedBmp_12();
 	this.instance_19.setTransform(51.05,131.65,0.5,0.5);
 
-	this.instance_20 = new lib.CachedBmp_354();
+	this.instance_20 = new lib.CachedBmp_357();
 	this.instance_20.setTransform(46.15,33.65,0.5,0.5);
 
 	this.instance_21 = new lib.CachedBmp_10();
@@ -2902,21 +2902,21 @@ lib.properties = {
 	color: "#99CC00",
 	opacity: 0.00,
 	manifest: [
-		{src:"images/CachedBmp_62.png?1604821377343", id:"CachedBmp_62"},
-		{src:"images/CachedBmp_61.png?1604821377343", id:"CachedBmp_61"},
-		{src:"images/CachedBmp_60.png?1604821377343", id:"CachedBmp_60"},
-		{src:"images/CachedBmp_59.png?1604821377343", id:"CachedBmp_59"},
-		{src:"images/CachedBmp_42.png?1604821377343", id:"CachedBmp_42"},
-		{src:"images/CachedBmp_37.png?1604821377343", id:"CachedBmp_37"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_1.png?1604821377235", id:"E1U2_G36_HTML5_Canvas_atlas_1"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_2.png?1604821377235", id:"E1U2_G36_HTML5_Canvas_atlas_2"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_3.png?1604821377235", id:"E1U2_G36_HTML5_Canvas_atlas_3"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_4.png?1604821377235", id:"E1U2_G36_HTML5_Canvas_atlas_4"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_5.png?1604821377235", id:"E1U2_G36_HTML5_Canvas_atlas_5"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_6.png?1604821377236", id:"E1U2_G36_HTML5_Canvas_atlas_6"},
-		{src:"images/E1U2_G36_HTML5_Canvas_atlas_7.png?1604821377237", id:"E1U2_G36_HTML5_Canvas_atlas_7"},
-		{src:"sounds/成功_.mp3?1604821377343", id:"成功"},
-		{src:"sounds/打雷_.mp3?1604821377343", id:"打雷"}
+		{src:"images/CachedBmp_62.png", id:"CachedBmp_62"},
+		{src:"images/CachedBmp_61.png", id:"CachedBmp_61"},
+		{src:"images/CachedBmp_60.png", id:"CachedBmp_60"},
+		{src:"images/CachedBmp_59.png", id:"CachedBmp_59"},
+		{src:"images/CachedBmp_42.png", id:"CachedBmp_42"},
+		{src:"images/CachedBmp_37.png", id:"CachedBmp_37"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_1.png", id:"E1U2_G36_HTML5_Canvas_atlas_1"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_2.png", id:"E1U2_G36_HTML5_Canvas_atlas_2"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_3.png", id:"E1U2_G36_HTML5_Canvas_atlas_3"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_4.png", id:"E1U2_G36_HTML5_Canvas_atlas_4"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_5.png", id:"E1U2_G36_HTML5_Canvas_atlas_5"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_6.png", id:"E1U2_G36_HTML5_Canvas_atlas_6"},
+		{src:"images/E1U2_G36_HTML5_Canvas_atlas_7.png", id:"E1U2_G36_HTML5_Canvas_atlas_7"},
+		{src:"sounds/成功_.mp3", id:"成功"},
+		{src:"sounds/打雷_.mp3", id:"打雷"}
 	],
 	preloads: []
 };
