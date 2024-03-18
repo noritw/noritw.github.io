@@ -17,8 +17,12 @@ function updateSerialNumbers() {
   request.send();
 }
 
-// 定時執行更新函數
-setInterval(updateSerialNumbers, 3000); // 每3秒更新一次
+// 页面加载时执行
+window.onload = function() {
+  updateSerialNumbers(); // 页面加载完成时立即更新
+  setInterval(updateSerialNumbers, 3000); // 之后每3秒更新一次
+};
+  
 </script>
 </head>
 <body>
