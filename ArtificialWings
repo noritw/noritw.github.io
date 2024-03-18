@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>序號剩餘數量</title>
+<script>
+// AJAX 請求更新序號數量的函數
+function updateSerialNumbers() {
+  var request = new XMLHttpRequest();
+  request.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      // 當請求成功時更新網頁元素
+      document.getElementById("remaining-codes").innerText = this.responseText;
+    }
+  };
+  // 替換 YOUR_WEB_APP_URL 為您的Web應用URL
+  request.open("GET", "https://script.google.com/macros/s/AKfycbwfc2cgNyraM6argP8Qj_1_kUUR18NH9hathJu5cGbpRWWxXwqqLE7dAKGpL_6lMrkc/exec", true);
+  request.send();
+}
+
+// 定時執行更新函數
+setInterval(updateSerialNumbers, 3000); // 每3秒更新一次
+</script>
+</head>
+<body>
+<h1>剩餘序號數量</h1>
+<div id="remaining-codes">加載中...</div>
+</body>
+</html>
