@@ -2,6 +2,21 @@
 <html>
 <head>
 <title>序號剩餘數量</title>
+ <style>
+  body, html {
+    height: 100%;
+    margin: 0;
+  }
+  #forms {
+    height: calc(100% - 50px); /* iframe的高度為整頁的100%減去上面元素的高度 */
+    width: 100%;
+    overflow: hidden;
+  }
+  iframe {
+    height: 100%;
+    width: 100%;
+  }
+</style>
 <script>
 // AJAX 請求更新序號數量的函數
 function updateSerialNumbers() {
@@ -26,11 +41,11 @@ window.onload = function() {
 </script>
 </head>
 <body>
-<h3>剩餘序號數量</h3>
-<div id="remaining-codes">加載中...</div>
-<div id="forms" height="800px">  
-<iframe frameBorder="0" width="100%" height="100%" src="https://forms.gle/WxhnPEUqFNiFx7qs6"></iframe>
+<h3 style="margin:0; padding: 10px 0; text-align: center;">剩餘序號數量</h3>
+<div id="remaining-codes" style="text-align: center;">加載中...</div>
+<div id="forms">  
+<iframe frameBorder="0" src="https://forms.gle/WxhnPEUqFNiFx7qs6"></iframe>
 </div>
-
+ 
 </body>
 </html>
