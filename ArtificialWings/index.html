@@ -22,8 +22,22 @@ function updateSerialNumbers() {
   var request = new XMLHttpRequest();
   request.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      // 當請求成功時更新網頁元素
-      document.getElementById("remaining-codes").innerText = this.responseText;
+      var responseText = this.responseText;
+      // 更新剩餘序號數量顯示
+      document.getElementById("remaining-codes").innerText = responseText;
+
+      // 檢查剩餘序號數量
+      var remaining = responseText.match(/剩餘(\d+)組/);
+      if (remaining && parseInt(remaining[1]) === 0) {
+        // 如果剩餘序號數量為0，隱藏或移除iframe
+        document.getElementById("forms").style.display = "none";
+        
+        // 可選擇添加一個提示信息
+        var message = document.createElement("p");
+        message.style.textAlign = "center";
+        message.innerText = "目前所有序號已經發放完畢，請等候後續開放";
+        document.body.insertBefore(message, document.getElementById("remaining-codes").nextSibling);
+      }     
     }
   };
   // 替換 YOUR_WEB_APP_URL 為您的Web應用URL
