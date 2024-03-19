@@ -32,11 +32,28 @@ function updateSerialNumbers() {
         // 如果剩餘序號數量為0，隱藏或移除iframe
         document.getElementById("forms").style.display = "none";
         
-        // 可選擇添加一個提示信息
-        var message = document.createElement("p");
-        message.style.textAlign = "center";
-        message.innerText = "目前所有序號已經發放完畢，請等候後續開放";
-        document.body.insertBefore(message, document.getElementById("remaining-codes").nextSibling);
+// 檢查是否已有提示信息元素
+        var existingMessage = document.getElementById("no-more-codes-message");
+        if (!existingMessage) {
+          // 創建並插入新的提示信息元素
+          var message = document.createElement("p");
+          message.setAttribute("id", "no-more-codes-message");
+          message.style.textAlign = "center";
+          message.innerText = "目前所有序號已經發放完畢，請等候後續開放";
+          document.body.insertBefore(message, document.getElementById("remaining-codes").nextSibling);
+        } else {
+          // 更新已有的提示信息元素文本
+          existingMessage.innerText = "目前所有序號已經發放完畢，請等候後續開放";
+        }
+      } else {
+        // 如果剩餘序號數量不為0，確保iframe顯示
+        document.getElementById("forms").style.display = "block";
+
+        // 如果有提示信息元素，移除它
+        var existingMessage = document.getElementById("no-more-codes-message");
+        if (existingMessage) {
+          existingMessage.remove();
+        }
       }     
     }
   };
