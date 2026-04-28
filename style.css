@@ -314,7 +314,7 @@ a:hover {
   height: 100%;
   object-fit: cover;
   filter: saturate(1.06) contrast(1.02);
-  opacity: 0.22;
+  opacity: 0.42;
 }
 
 .hero-overlay {
@@ -324,7 +324,7 @@ a:hover {
   background: linear-gradient(
       180deg,
       rgba(247, 251, 255, 0.45),
-      rgba(247, 251, 255, 0.92)
+      rgba(247, 251, 255, 0.78)
     ),
     radial-gradient(
       1000px 500px at 20% 30%,
