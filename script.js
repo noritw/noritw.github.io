@@ -99,6 +99,7 @@ function setupGreeter() {
 
   let lines = null;
   let cooldownUntil = 0;
+  const autoSpoken = new Set();
 
   const positionBubbleNear = (btn) => {
     if (!bubble) return;
@@ -142,6 +143,17 @@ function setupGreeter() {
     return { text: t, source: "local" };
   };
 
+  const sectionReply = (sectionId) => {
+    const sec = lines && lines.sections && lines.sections[sectionId];
+    if (!sec) return null;
+    // 兩隻小人都在，挑一隻講就好（偏向 YT，避免太「客服」）
+    const speaker = Math.random() < 0.55 ? "YT" : "KT";
+    const pool = sec[speaker] || [];
+    const text = pickRandom(pool);
+    if (!text) return null;
+    return { speaker, text, source: `section:${sectionId}` };
+  };
+
   const onClick = async (charId, btn) => {
     const now = Date.now();
     if (now < cooldownUntil) return;
@@ -174,6 +186,56 @@ function setupGreeter() {
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => onClick(btn.getAttribute("data-greeter"), btn));
   });
+
+  // Auto speak on section enter (once per section per page load)
+  const sectionMap = {
+    top: "#top",
+    what: "#what",
+    works: "#works",
+    highlights: 'section[aria-label="活動與分享"]',
+    about: "#about",
+    contact: "#contact",
+  };
+
+  const getSectionEl = (key) => qs(sectionMap[key]);
+
+  const runAutoSpeak = async (key) => {
+    const now = Date.now();
+    if (now < cooldownUntil) return;
+    if (autoSpoken.has(key)) return;
+    autoSpoken.add(key);
+
+    if (!lines) lines = await loadGreeterLines();
+    const r = sectionReply(key);
+    if (!r) return;
+
+    // 找對應角色按鈕定位氣泡
+    const btn = qs(`[data-greeter="${r.speaker}"]`);
+    setBubble(r.speaker, clampText(r.text, 60), "");
+    if (btn) positionBubbleNear(btn);
+    cooldownUntil = Date.now() + 1400;
+  };
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const ent of entries) {
+          if (!ent.isIntersecting) continue;
+          const key = ent.target.getAttribute("data-auto-say");
+          if (key) runAutoSpeak(key);
+        }
+      },
+      { root: null, rootMargin: "-35% 0px -45% 0px", threshold: 0.01 }
+    );
+
+    for (const key of Object.keys(sectionMap)) {
+      const el = getSectionEl(key);
+      if (!el) continue;
+      el.setAttribute("data-auto-say", key);
+      io.observe(el);
+    }
+  }
 }
 
 document.documentElement.classList.add("js");
