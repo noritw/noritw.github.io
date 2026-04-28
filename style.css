@@ -156,71 +156,57 @@ a:hover {
   font-size: 12px;
 }
 
-/* GREETER */
-.greeter {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+/* GREETER (floating) */
+.greeter-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
 }
 
-@media (max-width: 860px) {
-  .greeter {
-    grid-template-columns: 1fr;
-  }
-}
-
-.greeter-card {
-  text-align: left;
-  cursor: pointer;
-  border: 1px solid rgba(10, 18, 28, 0.12);
-  border-radius: calc(var(--radius) + 6px);
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+.greeter-float-btn {
+  width: 58px;
+  height: 58px;
   padding: 0;
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 14px;
-  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(10, 18, 28, 0.14);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 12px 30px rgba(10, 20, 30, 0.12);
+  cursor: pointer;
+  overflow: hidden;
 }
 
-.greeter-card:hover {
-  background: rgba(255, 255, 255, 0.9);
+.greeter-float-btn:hover {
+  background: rgba(255, 255, 255, 0.96);
 }
 
-.greeter-card:disabled {
+.greeter-float-btn:active {
+  transform: translateY(1px);
+}
+
+.greeter-float-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
-.greeter-img {
-  width: 140px;
-  height: 140px;
+.greeter-float-img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  background: linear-gradient(135deg, rgba(96, 185, 255, 0.22), rgba(54, 214, 198, 0.18));
 }
 
-.greeter-meta {
-  padding: 14px 14px 14px 0;
-  display: grid;
-  gap: 6px;
-}
-
-.greeter-name {
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-
-.greeter-hint {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.greeter-bubble {
-  margin-top: 14px;
+.greeter-float-bubble {
+  position: fixed;
+  right: 18px;
+  bottom: 86px;
+  z-index: 81;
+  width: min(360px, calc(100vw - 36px));
   border-radius: calc(var(--radius) + 6px);
   border: 1px solid rgba(10, 18, 28, 0.12);
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: var(--shadow);
 }
 

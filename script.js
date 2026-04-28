@@ -92,9 +92,10 @@ function setupGreeter() {
   const buttons = qsa("[data-greeter]");
   if (!buttons.length) return;
 
-  const speakerEl = qs("#greeterSpeaker");
-  const textEl = qs("#greeterText");
-  const subEl = qs("#greeterSub");
+  const bubble = qs(".greeter-float-bubble");
+  const speakerEl = qs("[data-greeter-speaker]");
+  const textEl = qs("[data-greeter-text]");
+  const subEl = qs("[data-greeter-sub]");
 
   let lines = null;
   let cooldownUntil = 0;
@@ -103,6 +104,7 @@ function setupGreeter() {
     if (speakerEl) speakerEl.textContent = speaker || "—";
     if (textEl) textEl.textContent = text || "";
     if (subEl) subEl.textContent = sub || "";
+    if (bubble) bubble.hidden = false;
   };
 
   const setDisabled = (disabled) => {
@@ -116,24 +118,6 @@ function setupGreeter() {
     return { text: t, source: "local" };
   };
 
-  const apiReply = async (charId) => {
-    // 預設走同源 /api/line（若你未部署後端，會自動 fallback 到本地台詞庫）
-    // 你部署 Worker 後，想改成外部網址可在 index.html 加：
-    // <script>window.__GREETER_API__="https://xxx.workers.dev/api/line"</script>
-    const base = window.__GREETER_API__ || "/api/line";
-
-    const url = new URL(base);
-    url.searchParams.set("char", charId);
-
-    const res = await fetch(url.toString(), {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(String(res.status));
-    return await res.json();
-  };
-
   const onClick = async (charId) => {
     const now = Date.now();
     if (now < cooldownUntil) return;
@@ -144,17 +128,16 @@ function setupGreeter() {
     // 先本地台詞庫跑起來，再慢慢接後端
     if (!lines) lines = await loadGreeterLines();
 
-    // 10% 試著打 API；失敗就退回本地
-    const useApi = Math.random() < 0.1;
     try {
-      const reply = useApi ? await apiReply(charId) : localReply(charId);
+      // 目前先固定只用台詞庫（後端接好再開）
+      const reply = localReply(charId);
       const text = clampText(reply.text, 60);
-      setBubble(charId, text, reply.source ? `(${reply.source})` : "");
-      const cd = Number(reply.cooldownMs || 1200);
+      setBubble(charId, text, "");
+      const cd = 1200;
       cooldownUntil = Date.now() + Math.min(5000, Math.max(600, cd));
     } catch {
       const reply = localReply(charId);
-      setBubble(charId, clampText(reply.text, 60), "(local)");
+      setBubble(charId, clampText(reply.text, 60), "");
       cooldownUntil = Date.now() + 1200;
     } finally {
       setTimeout(() => setDisabled(false), Math.max(0, cooldownUntil - Date.now()));
