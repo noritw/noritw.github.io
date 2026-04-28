@@ -217,6 +217,27 @@ a:hover {
   box-shadow: var(--shadow);
 }
 
+@media (max-width: 520px) {
+  /* 手機版避免擋住內容：只留一隻、縮小、貼邊 */
+  .greeter-float-btn {
+    width: 92px;
+    height: 92px;
+  }
+
+  .greeter-float-btn.pos-kt {
+    display: none;
+  }
+
+  .greeter-float-btn.pos-yt {
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .greeter-float-bubble {
+    width: min(320px, calc(100vw - 16px));
+  }
+}
+
 .greeter-bubble-inner {
   padding: 14px 16px;
   display: grid;
