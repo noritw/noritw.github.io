@@ -204,41 +204,6 @@
         </div>
       </section>
 
-      <!-- Greeter（招呼用小人：無輸入、短回覆） -->
-      <section class="section" aria-label="角色互動">
-        <div class="container">
-          <div class="section-title" data-reveal>
-            <h2>來打個招呼</h2>
-          </div>
-
-          <div class="greeter" data-reveal>
-            <button class="greeter-card" type="button" data-greeter="KT" aria-label="和 KT 打招呼">
-              <img class="greeter-img" src="./assets/images/KT.png" alt="KT" />
-              <div class="greeter-meta">
-                <div class="greeter-name">KT</div>
-                <div class="greeter-hint">點我一句</div>
-              </div>
-            </button>
-
-            <button class="greeter-card" type="button" data-greeter="YT" aria-label="和 YT 打招呼">
-              <img class="greeter-img" src="./assets/images/YT.png" alt="YT" />
-              <div class="greeter-meta">
-                <div class="greeter-name">YT</div>
-                <div class="greeter-hint">點我一句</div>
-              </div>
-            </button>
-          </div>
-
-          <div class="greeter-bubble" aria-live="polite" aria-atomic="true">
-            <div class="greeter-bubble-inner">
-              <div class="greeter-bubble-speaker mono" id="greeterSpeaker">—</div>
-              <div class="greeter-bubble-text" id="greeterText">點上面任一個角色。</div>
-              <div class="greeter-bubble-sub mono" id="greeterSub">（無輸入・短回覆・有配額）</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- Section 4 — 關於我 -->
       <section id="about" class="section">
         <div class="container">
@@ -275,6 +240,24 @@
         </div>
       </div>
     </footer>
+
+    <!-- Floating Greeter（招呼用小人：固定在畫面上） -->
+    <div class="greeter-float" aria-label="角色互動">
+      <button class="greeter-float-btn" type="button" data-greeter="KT" aria-label="和 KT 打招呼">
+        <img class="greeter-float-img" src="./assets/images/KT.png" alt="KT" />
+      </button>
+      <button class="greeter-float-btn" type="button" data-greeter="YT" aria-label="和 YT 打招呼">
+        <img class="greeter-float-img" src="./assets/images/YT.png" alt="YT" />
+      </button>
+    </div>
+
+    <div class="greeter-float-bubble" aria-live="polite" aria-atomic="true" hidden>
+      <div class="greeter-bubble-inner">
+        <div class="greeter-bubble-speaker mono" data-greeter-speaker>—</div>
+        <div class="greeter-bubble-text" data-greeter-text></div>
+        <div class="greeter-bubble-sub mono" data-greeter-sub>（無輸入・短回覆）</div>
+      </div>
+    </div>
 
     <script src="./script.js" defer></script>
   </body>
