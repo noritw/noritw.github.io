@@ -1,0 +1,23 @@
+name = "nori-greeter"
+main = "src/index.ts"
+compatibility_date = "2026-04-29"
+
+[vars]
+# 0.10 = 10% 機率走 LLM（其餘走台詞庫）
+LLM_RATIO = "0.10"
+
+# 安全上限（單位：次）
+IP_DAILY_LIMIT = "30"
+IP_HOURLY_LIMIT = "60"
+
+# OpenAI 每日生成上限（全站）
+LLM_DAILY_LIMIT = "50"
+
+# 回覆硬限制（字元數）
+MAX_CHARS = "60"
+
+[kv_namespaces]
+bindings = [
+  { binding = "KV", id = "REPLACE_WITH_KV_ID" }
+]
+

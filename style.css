@@ -156,6 +156,95 @@ a:hover {
   font-size: 12px;
 }
 
+/* GREETER */
+.greeter {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 860px) {
+  .greeter {
+    grid-template-columns: 1fr;
+  }
+}
+
+.greeter-card {
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  border-radius: calc(var(--radius) + 6px);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.greeter-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.greeter-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.greeter-img {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  background: linear-gradient(135deg, rgba(96, 185, 255, 0.22), rgba(54, 214, 198, 0.18));
+}
+
+.greeter-meta {
+  padding: 14px 14px 14px 0;
+  display: grid;
+  gap: 6px;
+}
+
+.greeter-name {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.greeter-hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.greeter-bubble {
+  margin-top: 14px;
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: var(--shadow);
+}
+
+.greeter-bubble-inner {
+  padding: 14px 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.greeter-bubble-speaker {
+  color: rgba(10, 18, 28, 0.72);
+  font-size: 12px;
+}
+
+.greeter-bubble-text {
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.greeter-bubble-sub {
+  color: var(--muted);
+  font-size: 11px;
+}
+
 /* HERO */
 .hero {
   min-height: calc(100svh - 62px);
