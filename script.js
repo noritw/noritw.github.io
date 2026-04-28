@@ -100,6 +100,30 @@ function setupGreeter() {
   let lines = null;
   let cooldownUntil = 0;
 
+  const positionBubbleNear = (btn) => {
+    if (!bubble) return;
+    const rect = btn.getBoundingClientRect();
+    const pad = 12;
+    const bw = bubble.getBoundingClientRect().width || 360;
+    const bh = bubble.getBoundingClientRect().height || 120;
+
+    // default place above the character
+    let left = rect.left + rect.width / 2 - bw / 2;
+    let top = rect.top - bh - pad;
+
+    // if not enough space above, place below
+    if (top < pad) top = rect.bottom + pad;
+
+    // keep within viewport
+    left = Math.max(pad, Math.min(left, window.innerWidth - bw - pad));
+    top = Math.max(pad, Math.min(top, window.innerHeight - bh - pad));
+
+    bubble.style.left = `${Math.round(left)}px`;
+    bubble.style.top = `${Math.round(top)}px`;
+    bubble.style.right = "auto";
+    bubble.style.bottom = "auto";
+  };
+
   const setBubble = (speaker, text, sub) => {
     if (speakerEl) speakerEl.textContent = speaker || "—";
     if (textEl) textEl.textContent = text || "";
@@ -118,12 +142,13 @@ function setupGreeter() {
     return { text: t, source: "local" };
   };
 
-  const onClick = async (charId) => {
+  const onClick = async (charId, btn) => {
     const now = Date.now();
     if (now < cooldownUntil) return;
 
     setDisabled(true);
     setBubble(charId, "……", "（思考中）");
+    if (btn) positionBubbleNear(btn);
 
     // 先本地台詞庫跑起來，再慢慢接後端
     if (!lines) lines = await loadGreeterLines();
@@ -133,11 +158,13 @@ function setupGreeter() {
       const reply = localReply(charId);
       const text = clampText(reply.text, 60);
       setBubble(charId, text, "");
+      if (btn) positionBubbleNear(btn);
       const cd = 1200;
       cooldownUntil = Date.now() + Math.min(5000, Math.max(600, cd));
     } catch {
       const reply = localReply(charId);
       setBubble(charId, clampText(reply.text, 60), "");
+      if (btn) positionBubbleNear(btn);
       cooldownUntil = Date.now() + 1200;
     } finally {
       setTimeout(() => setDisabled(false), Math.max(0, cooldownUntil - Date.now()));
@@ -145,7 +172,7 @@ function setupGreeter() {
   };
 
   buttons.forEach((btn) => {
-    btn.addEventListener("click", () => onClick(btn.getAttribute("data-greeter")));
+    btn.addEventListener("click", () => onClick(btn.getAttribute("data-greeter"), btn));
   });
 }
 
