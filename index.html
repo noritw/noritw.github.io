@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>noritw</title>
+    <meta name="description" content="noritw 的個人網站：作品、筆記與聯絡方式。" />
+
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel2: rgba(255, 255, 255, 0.09);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.68);
+        --border: rgba(255, 255, 255, 0.14);
+        --brand: #7c5cff;
+        --brand2: #34d399;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #f7f7fb;
+          --panel: rgba(0, 0, 0, 0.045);
+          --panel2: rgba(0, 0, 0, 0.06);
+          --text: rgba(0, 0, 0, 0.86);
+          --muted: rgba(0, 0, 0, 0.6);
+          --border: rgba(0, 0, 0, 0.12);
+          --shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
+        line-height: 1.55;
+        letter-spacing: 0.2px;
+        background: radial-gradient(
+            1200px 700px at 15% 10%,
+            rgba(124, 92, 255, 0.35),
+            transparent 55%
+          ),
+          radial-gradient(
+            900px 600px at 85% 30%,
+            rgba(52, 211, 153, 0.22),
+            transparent 60%
+          ),
+          radial-gradient(
+            1100px 700px at 35% 95%,
+            rgba(56, 189, 248, 0.16),
+            transparent 55%
+          ),
+          var(--bg);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 56px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0 18px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--brand), var(--brand2));
+        box-shadow: 0 0 0 5px rgba(124, 92, 255, 0.18);
+      }
+      nav {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .navlink {
+        padding: 8px 10px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: var(--muted);
+      }
+      .navlink:hover {
+        border-color: var(--border);
+        text-decoration: none;
+        color: var(--text);
+        background: var(--panel);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 16px;
+        align-items: stretch;
+        margin-top: 10px;
+      }
+      @media (max-width: 860px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: linear-gradient(180deg, var(--panel), transparent 160%);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .card .inner {
+        padding: 18px 18px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(26px, 3.3vw, 38px);
+        line-height: 1.15;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .lead {
+        font-size: 15px;
+        margin-top: 6px;
+      }
+
+      .cta {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        text-decoration: none;
+        color: var(--text);
+        min-height: 42px;
+      }
+      .btn:hover {
+        background: var(--panel2);
+        text-decoration: none;
+      }
+      .btn.primary {
+        border-color: rgba(124, 92, 255, 0.45);
+        background: linear-gradient(
+          135deg,
+          rgba(124, 92, 255, 0.28),
+          rgba(52, 211, 153, 0.18)
+        );
+      }
+      .btn small {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .col-8 {
+        grid-column: span 8;
+      }
+      .col-4 {
+        grid-column: span 4;
+      }
+      @media (max-width: 860px) {
+        .col-8,
+        .col-4 {
+          grid-column: 1 / -1;
+        }
+      }
+
+      .sectionTitle {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 0 0 10px;
+      }
+      .sectionTitle h2 {
+        margin: 0;
+        font-size: 16px;
+        letter-spacing: 0.4px;
+      }
+      .sectionTitle span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .list {
+        display: grid;
+        gap: 10px;
+      }
+      .item {
+        display: grid;
+        gap: 6px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      @media (prefers-color-scheme: light) {
+        .item {
+          background: rgba(0, 0, 0, 0.02);
+        }
+      }
+      .itemTitle {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .itemTitle strong {
+        font-size: 14px;
+      }
+      .tag {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      footer {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 10px 2px 0;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="brand" href="/" aria-label="回到首頁">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="mono">noritw</span>
+        </a>
+        <nav aria-label="網站導覽">
+          <a class="navlink" href="#works">作品</a>
+          <a class="navlink" href="#notes">筆記</a>
+          <a class="navlink" href="#contact">聯絡</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <div class="card">
+          <div class="inner">
+            <h1>我把簡單的事做好，然後保持速度。</h1>
+            <p class="lead">
+              這裡是我的個人網站。先讓它上線，再慢慢把內容補滿；你不需要等到完美才開始。
+            </p>
+            <div class="cta">
+              <a class="btn primary" href="#works">
+                看作品 <small>（先從這裡）</small>
+              </a>
+              <a class="btn" href="https://github.com/noritw" target="_blank" rel="noreferrer">
+                GitHub
+              </a>
+              <a class="btn" href="#contact">聯絡我</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="inner">
+            <div class="sectionTitle">
+              <h2>快速連結</h2>
+              <span>你可以直接改成你的內容</span>
+            </div>
+            <div class="list">
+              <a class="item" href="GrayscaleMemories/" aria-label="開啟 GrayscaleMemories">
+                <div class="itemTitle">
+                  <strong>GrayscaleMemories</strong>
+                  <span class="tag">project</span>
+                </div>
+                <p>站內子資料夾內容（目前 repo 內已存在）。</p>
+              </a>
+              <a class="item" href="ArtificialWings/" aria-label="開啟 ArtificialWings">
+                <div class="itemTitle">
+                  <strong>ArtificialWings</strong>
+                  <span class="tag">project</span>
+                </div>
+                <p>把你的作品丟到資料夾內就能公開。</p>
+              </a>
+              <a class="item" href="FlashHTML5test/" aria-label="開啟 FlashHTML5test">
+                <div class="itemTitle">
+                  <strong>FlashHTML5test</strong>
+                  <span class="tag">lab</span>
+                </div>
+                <p>實驗區。</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="works" class="grid" style="margin-top: 16px">
+        <div class="card col-8">
+          <div class="inner">
+            <div class="sectionTitle">
+              <h2>作品</h2>
+              <span>挑 3～6 個最能代表你現在的</span>
+            </div>
+            <div class="list">
+              <a class="item" href="#" onclick="return false;">
+                <div class="itemTitle">
+                  <strong>作品 A（先佔位）</strong>
+                  <span class="tag">web / tool</span>
+                </div>
+                <p>一句話講清楚它解決什麼問題、你做了什麼。</p>
+              </a>
+              <a class="item" href="#" onclick="return false;">
+                <div class="itemTitle">
+                  <strong>作品 B（先佔位）</strong>
+                  <span class="tag">game / art</span>
+                </div>
+                <p>如果有 demo / 截圖，之後再加進來。</p>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card col-4">
+          <div class="inner">
+            <div class="sectionTitle">
+              <h2>我目前在做</h2>
+              <span>狀態欄</span>
+            </div>
+            <div class="list">
+              <div class="item">
+                <div class="itemTitle">
+                  <strong>把網站整理乾淨</strong>
+                  <span class="tag mono">now</span>
+                </div>
+                <p>先能用，再變好看；先能說清楚，再求完整。</p>
+              </div>
+              <div class="item">
+                <div class="itemTitle">
+                  <strong>慢慢補內容</strong>
+                  <span class="tag mono">next</span>
+                </div>
+                <p>履歷、作品、聯絡方式。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="notes" class="grid" style="margin-top: 14px">
+        <div class="card col-8">
+          <div class="inner">
+            <div class="sectionTitle">
+              <h2>筆記</h2>
+              <span>之後要加文章再做也行</span>
+            </div>
+            <div class="list">
+              <a class="item" href="index.md" aria-label="查看舊的 GitHub Pages 預設頁">
+                <div class="itemTitle">
+                  <strong>舊的 index.md（預設頁）</strong>
+                  <span class="tag">markdown</span>
+                </div>
+                <p>你之前留著的內容我沒刪，先放著。</p>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card col-4" id="contact">
+          <div class="inner">
+            <div class="sectionTitle">
+              <h2>聯絡</h2>
+              <span>改成你的真實資訊</span>
+            </div>
+            <div class="list">
+              <a class="item" href="https://github.com/noritw" target="_blank" rel="noreferrer">
+                <div class="itemTitle">
+                  <strong>GitHub</strong>
+                  <span class="tag mono">@noritw</span>
+                </div>
+                <p>開源 / 作品。</p>
+              </a>
+              <a class="item" href="mailto:you@example.com">
+                <div class="itemTitle">
+                  <strong>Email</strong>
+                  <span class="tag mono">you@example.com</span>
+                </div>
+                <p>把這行改成你的信箱。</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>© <span id="y"></span> noritw</span>
+        <span class="mono">GitHub Pages</span>
+      </footer>
+    </div>
+
+    <script>
+      document.getElementById("y").textContent = String(new Date().getFullYear());
+    </script>
+  </body>
+</html>
