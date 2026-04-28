@@ -1,16 +1,20 @@
 :root {
-  --bg: #070912;
-  --bg2: #0b1020;
-  --panel: rgba(255, 255, 255, 0.06);
-  --panel2: rgba(255, 255, 255, 0.1);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.7);
-  --border: rgba(255, 255, 255, 0.14);
-  --shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  /* 淺色底：春夏藍綠系，橘色少量點綴 */
+  --bg: #f7fbff;
+  --bg2: #f2fff9;
+  --panel: rgba(0, 20, 40, 0.05);
+  --panel2: rgba(0, 20, 40, 0.08);
+  --text: rgba(10, 18, 28, 0.92);
+  --muted: rgba(10, 18, 28, 0.62);
+  --border: rgba(10, 18, 28, 0.12);
+  --shadow: 0 18px 46px rgba(10, 20, 30, 0.12);
 
-  /* 強調色：之後你可以改成 DYH / AW 的主色 */
-  --accent: #7c5cff;
-  --accent2: #34d399;
+  /* 主色（藍綠） */
+  --accent: #60b9ff; /* sky */
+  --accent2: #36d6c6; /* teal */
+  --accent3: #7bdc57; /* green */
+  /* 少量重點（橘） */
+  --hot: #ff8a3d;
 
   --radius: 18px;
   --max: 1120px;
@@ -28,18 +32,18 @@ body {
   margin: 0;
   color: var(--text);
   background: radial-gradient(
-      1200px 700px at 15% 10%,
-      rgba(124, 92, 255, 0.28),
+      1200px 700px at 18% 10%,
+      rgba(96, 185, 255, 0.28),
       transparent 55%
     ),
     radial-gradient(
-      900px 600px at 85% 30%,
-      rgba(52, 211, 153, 0.18),
+      900px 620px at 78% 22%,
+      rgba(54, 214, 198, 0.22),
       transparent 60%
     ),
     radial-gradient(
-      1100px 700px at 35% 95%,
-      rgba(56, 189, 248, 0.12),
+      1100px 740px at 35% 95%,
+      rgba(123, 220, 87, 0.16),
       transparent 55%
     ),
     linear-gradient(180deg, var(--bg), var(--bg2));
@@ -74,8 +78,8 @@ a:hover {
   z-index: 50;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  background: rgba(7, 9, 18, 0.55);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(247, 251, 255, 0.78);
+  border-bottom: 1px solid rgba(10, 18, 28, 0.08);
 }
 
 .topbar-inner {
@@ -98,8 +102,8 @@ a:hover {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  box-shadow: 0 0 0 6px rgba(124, 92, 255, 0.16);
+  background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+  box-shadow: 0 0 0 6px rgba(96, 185, 255, 0.18);
 }
 
 .mono {
@@ -125,7 +129,7 @@ a:hover {
   text-decoration: none;
   color: var(--text);
   border-color: var(--border);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(0, 20, 40, 0.045);
 }
 
 .section {
@@ -165,24 +169,29 @@ a:hover {
   isolation: isolate;
   border-radius: calc(var(--radius) + 6px);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(10, 18, 28, 0.12);
   box-shadow: var(--shadow);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.35), rgba(52, 211, 153, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(96, 185, 255, 0.42),
+    rgba(54, 214, 198, 0.28),
+    rgba(123, 220, 87, 0.22)
+  );
 }
 
 .hero-bg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(1.05) contrast(1.02);
-  opacity: 0.55;
+  filter: saturate(1.06) contrast(1.02);
+  opacity: 0.22;
 }
 
 .hero-overlay {
@@ -191,12 +200,12 @@ a:hover {
   z-index: -1;
   background: linear-gradient(
       180deg,
-      rgba(7, 9, 18, 0.25),
-      rgba(7, 9, 18, 0.78)
+      rgba(247, 251, 255, 0.45),
+      rgba(247, 251, 255, 0.92)
     ),
     radial-gradient(
       1000px 500px at 20% 30%,
-      rgba(124, 92, 255, 0.28),
+      rgba(96, 185, 255, 0.25),
       transparent 55%
     );
 }
@@ -209,7 +218,7 @@ a:hover {
 }
 
 .hero-kicker {
-  color: rgba(255, 255, 255, 0.74);
+  color: rgba(10, 18, 28, 0.66);
   font-size: 12px;
   letter-spacing: 0.7px;
   text-transform: uppercase;
@@ -232,13 +241,13 @@ a:hover {
 
 .hero .one-liner {
   margin: 0;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(10, 18, 28, 0.86);
   font-size: 16px;
 }
 
 .hero .sub {
   margin: 0;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(10, 18, 28, 0.62);
   font-size: 14px;
 }
 
@@ -257,22 +266,45 @@ a:hover {
   padding: 11px 14px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.7);
   min-height: 44px;
   text-decoration: none;
 }
 
 .btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.86);
   text-decoration: none;
 }
 
 .btn.primary {
-  border-color: rgba(124, 92, 255, 0.42);
+  border-color: rgba(96, 185, 255, 0.38);
   background: linear-gradient(
     135deg,
-    rgba(124, 92, 255, 0.28),
-    rgba(52, 211, 153, 0.16)
+    rgba(96, 185, 255, 0.28),
+    rgba(54, 214, 198, 0.18),
+    rgba(123, 220, 87, 0.12)
+  );
+}
+
+/* 橘色重點（少量使用）：把 CTA/重要連結加上 .hot 就會變橘 */
+.btn.hot,
+.links a.hot,
+.social a.hot {
+  border-color: rgba(255, 138, 61, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 138, 61, 0.18),
+    rgba(255, 255, 255, 0.76)
+  );
+}
+
+.btn.hot:hover,
+.links a.hot:hover,
+.social a.hot:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 138, 61, 0.26),
+    rgba(255, 255, 255, 0.9)
   );
 }
 
@@ -294,8 +326,8 @@ a:hover {
 
 .card {
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 140%);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.38));
   box-shadow: var(--shadow);
   overflow: hidden;
 }
@@ -318,10 +350,10 @@ a:hover {
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  color: rgba(10, 18, 28, 0.68);
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 /* WORKS */
@@ -343,18 +375,18 @@ a:hover {
 .work-media {
   border-radius: calc(var(--radius) + 6px);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(10, 18, 28, 0.12);
   box-shadow: var(--shadow);
   position: relative;
   min-height: 260px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .work-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.8;
+  opacity: 0.55;
 }
 
 .work-media .placeholder {
@@ -364,10 +396,11 @@ a:hover {
   place-items: center;
   background: linear-gradient(
     135deg,
-    rgba(124, 92, 255, 0.32),
-    rgba(52, 211, 153, 0.18)
+    rgba(96, 185, 255, 0.34),
+    rgba(54, 214, 198, 0.22),
+    rgba(123, 220, 87, 0.16)
   );
-  color: rgba(255, 255, 255, 0.86);
+  color: rgba(10, 18, 28, 0.78);
   font-weight: 700;
   letter-spacing: 0.5px;
 }
@@ -398,13 +431,13 @@ a:hover {
 .links a {
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(255, 255, 255, 0.7);
   text-decoration: none;
 }
 
 .links a:hover {
-  background: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 @media (max-width: 860px) {
@@ -420,15 +453,15 @@ a:hover {
   margin: 0 auto;
   padding: 22px 18px;
   border-radius: calc(var(--radius) + 6px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(255, 255, 255, 0.62);
   box-shadow: var(--shadow);
 }
 
 .about blockquote {
   margin: 0;
   padding: 0;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(10, 18, 28, 0.82);
   font-size: 15px;
   line-height: 1.7;
 }
@@ -442,7 +475,7 @@ a:hover {
 /* FOOTER */
 footer {
   padding: 26px 0 44px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(10, 18, 28, 0.08);
   color: var(--muted);
 }
 
@@ -463,13 +496,13 @@ footer {
 .social a {
   padding: 8px 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(255, 255, 255, 0.65);
   text-decoration: none;
 }
 
 .social a:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 /* REVEAL ANIMATION */
