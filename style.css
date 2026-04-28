@@ -225,16 +225,22 @@ a:hover {
   }
 
   .greeter-float-btn.pos-kt {
-    display: none;
+    left: 8px;
+    top: auto;
+    bottom: 8px;
   }
 
   .greeter-float-btn.pos-yt {
-    right: 8px;
-    bottom: 8px;
+    display: none;
   }
 
   .greeter-float-bubble {
     width: min(320px, calc(100vw - 16px));
+  }
+
+  /* Footer 加高，避免被浮動小人擋住 */
+  footer {
+    padding-bottom: 140px;
   }
 }
 
