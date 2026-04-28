@@ -345,6 +345,17 @@ a:hover {
   .hero-content {
     padding: 26px 18px 20px;
   }
+
+  .hero-head {
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
 }
 
 .hero-content {
@@ -352,6 +363,22 @@ a:hover {
   display: grid;
   gap: 12px;
   max-width: 760px;
+}
+
+.hero-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.hero-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 18px;
+  object-fit: cover;
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(10, 20, 30, 0.12);
 }
 
 .hero-kicker {
