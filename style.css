@@ -218,7 +218,7 @@ a:hover {
 }
 
 @media (max-width: 520px) {
-  /* 手機版避免擋住內容：只留一隻、縮小、貼邊 */
+  /* 手機版避免擋住內容：縮小、貼邊（雙人同時存在） */
   .greeter-float-btn {
     width: 92px;
     height: 92px;
@@ -231,7 +231,8 @@ a:hover {
   }
 
   .greeter-float-btn.pos-yt {
-    display: none;
+    right: 8px;
+    bottom: 8px;
   }
 
   .greeter-float-bubble {
