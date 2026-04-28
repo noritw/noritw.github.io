@@ -224,8 +224,7 @@ a:hover {
 }
 
 .greeter-bubble-speaker {
-  color: rgba(10, 18, 28, 0.72);
-  font-size: 12px;
+  display: none;
 }
 
 .greeter-bubble-text {
