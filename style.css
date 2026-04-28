@@ -245,6 +245,17 @@ a:hover {
   }
 }
 
+.mobile-footer-spacer {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .mobile-footer-spacer {
+    display: block;
+    height: 160px;
+  }
+}
+
 .greeter-bubble-inner {
   padding: 14px 16px;
   display: grid;
