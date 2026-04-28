@@ -280,13 +280,16 @@ a:hover {
 .hero {
   min-height: calc(100svh - 62px);
   display: grid;
-  align-items: end;
-  padding: 0;
+  align-items: stretch;
+  padding: 18px 0 0;
 }
 
 .hero-stage {
   position: relative;
   isolation: isolate;
+  min-height: min(720px, calc(100svh - 110px));
+  display: grid;
+  align-items: end;
   border-radius: calc(var(--radius) + 6px);
   overflow: hidden;
   border: 1px solid rgba(10, 18, 28, 0.12);
