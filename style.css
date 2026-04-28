@@ -338,7 +338,7 @@ a:hover {
 
 .focus-card {
   position: relative;
-  border-color: rgba(10, 18, 28, 0.14);
+  border-color: rgba(10, 18, 28, 0.16);
   background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.85),
@@ -349,6 +349,17 @@ a:hover {
       var(--focus-tint, rgba(96, 185, 255, 0.18)),
       transparent 55%
     );
+}
+
+.focus-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  background: var(--focus-bar, linear-gradient(90deg, var(--accent), var(--accent2)));
+  opacity: 0.95;
 }
 
 .focus-card::after {
@@ -366,15 +377,18 @@ a:hover {
 }
 
 .focus-indie {
-  --focus-tint: rgba(96, 185, 255, 0.22);
+  --focus-tint: rgba(96, 185, 255, 0.32);
+  --focus-bar: linear-gradient(90deg, rgba(96, 185, 255, 0.95), rgba(56, 189, 248, 0.55));
 }
 
 .focus-techart {
-  --focus-tint: rgba(54, 214, 198, 0.22);
+  --focus-tint: rgba(54, 214, 198, 0.32);
+  --focus-bar: linear-gradient(90deg, rgba(54, 214, 198, 0.95), rgba(123, 220, 87, 0.55));
 }
 
 .focus-teaching {
-  --focus-tint: rgba(255, 138, 61, 0.16);
+  --focus-tint: rgba(255, 138, 61, 0.26);
+  --focus-bar: linear-gradient(90deg, rgba(255, 138, 61, 0.95), rgba(255, 184, 107, 0.6));
 }
 
 .card-inner {
