@@ -88,6 +88,60 @@ function clampText(s, maxLen) {
   return t.length > maxLen ? t.slice(0, maxLen - 1) + "…" : t;
 }
 
+function getTimeContext(now = new Date()) {
+  const hour = now.getHours(); // visitor local time
+  const timeStr = new Intl.DateTimeFormat("zh-TW", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(now);
+
+  let slot = "day";
+  if (hour >= 0 && hour <= 4) slot = "lateNight";
+  else if (hour >= 5 && hour <= 8) slot = "early";
+  else if (hour >= 9 && hour <= 11) slot = "morning";
+  else if (hour >= 12 && hour <= 13) slot = "noon";
+  else if (hour >= 14 && hour <= 17) slot = "afternoon";
+  else if (hour >= 18 && hour <= 20) slot = "dinner";
+  else slot = "night";
+
+  return { hour, slot, timeStr };
+}
+
+function maybeAddTimeFlavor(baseText, speaker) {
+  const t = (baseText || "").trim();
+  if (!t) return t;
+
+  // Avoid making every line time-aware; keep it occasional.
+  if (Math.random() > 0.38) return t;
+
+  const { slot } = getTimeContext();
+  const kt = {
+    lateNight: "……這時間還醒著？",
+    early: "這麼早起來？",
+    morning: "早。",
+    noon: "中午了。去吃東西。",
+    afternoon: "下午了，作者進度還在跑。",
+    dinner: "晚餐吃了沒。",
+    night: "晚了，別太拼。",
+  };
+  const yt = {
+    lateNight: "欸……凌晨了還不睡？",
+    early: "你也太早了吧。",
+    morning: "早安～",
+    noon: "中午了，要不要先去吃午餐？",
+    afternoon: "下午模式開啟。加油一下就好。",
+    dinner: "晚餐吃了沒？作者會忘記。",
+    night: "晚點記得休息喔。",
+  };
+
+  const tail = (speaker === "KT" ? kt : yt)[slot];
+  if (!tail) return t;
+
+  // Keep it short; avoid double punctuation.
+  const joiner = t.endsWith("。") || t.endsWith("！") || t.endsWith("？") ? " " : "。";
+  return `${t}${joiner}${tail}`;
+}
+
 function setupGreeter() {
   const buttons = qsa("[data-greeter]");
   if (!buttons.length) return;
@@ -168,14 +222,16 @@ function setupGreeter() {
     try {
       // 目前先固定只用台詞庫（後端接好再開）
       const reply = localReply(charId);
-      const text = clampText(reply.text, 60);
+      const flavored = maybeAddTimeFlavor(reply.text, charId);
+      const text = clampText(flavored, 60);
       setBubble(charId, text, "");
       if (btn) positionBubbleNear(btn);
       const cd = 1200;
       cooldownUntil = Date.now() + Math.min(5000, Math.max(600, cd));
     } catch {
       const reply = localReply(charId);
-      setBubble(charId, clampText(reply.text, 60), "");
+      const flavored = maybeAddTimeFlavor(reply.text, charId);
+      setBubble(charId, clampText(flavored, 60), "");
       if (btn) positionBubbleNear(btn);
       cooldownUntil = Date.now() + 1200;
     } finally {
@@ -211,7 +267,8 @@ function setupGreeter() {
 
     // 找對應角色按鈕定位氣泡
     const btn = qs(`[data-greeter="${r.speaker}"]`);
-    setBubble(r.speaker, clampText(r.text, 60), "");
+    const flavored = maybeAddTimeFlavor(r.text, r.speaker);
+    setBubble(r.speaker, clampText(flavored, 60), "");
     if (btn) positionBubbleNear(btn);
     cooldownUntil = Date.now() + 1400;
   };
