@@ -159,28 +159,26 @@ a:hover {
 /* GREETER (floating) */
 .greeter-float {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  inset: 0;
   z-index: 80;
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
+  pointer-events: none;
 }
 
 .greeter-float-btn {
-  width: 58px;
-  height: 58px;
+  position: fixed;
+  width: 140px;
+  height: 140px;
   padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(10, 18, 28, 0.14);
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 12px 30px rgba(10, 20, 30, 0.12);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
+  pointer-events: auto;
 }
 
 .greeter-float-btn:hover {
-  background: rgba(255, 255, 255, 0.96);
+  filter: drop-shadow(0 14px 22px rgba(10, 20, 30, 0.22));
 }
 
 .greeter-float-btn:active {
@@ -195,13 +193,22 @@ a:hover {
 .greeter-float-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+.greeter-float-btn.pos-kt {
+  left: 14px;
+  top: 74px;
+}
+
+.greeter-float-btn.pos-yt {
+  right: 14px;
+  bottom: 14px;
 }
 
 .greeter-float-bubble {
   position: fixed;
-  right: 18px;
-  bottom: 86px;
   z-index: 81;
   width: min(360px, calc(100vw - 36px));
   border-radius: calc(var(--radius) + 6px);
