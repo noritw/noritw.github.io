@@ -65,6 +65,41 @@ function setupHeroStagger() {
   });
 }
 
+function setupHeroBgRotation() {
+  const img = qs("#heroBgImg");
+  if (!img) return;
+
+  // 你可以在 assets/images/ 放更多張：
+  // hero-bg.jpg, hero-bg-2.jpg, hero-bg-3.jpg ...
+  const candidates = [
+    "./assets/images/hero-bg.jpg",
+    "./assets/images/hero-bg-2.jpg",
+    "./assets/images/hero-bg-3.jpg",
+    "./assets/images/hero-bg-4.jpg",
+  ];
+
+  const unique = Array.from(new Set(candidates));
+  const shuffled = unique
+    .map((v) => ({ v, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map((x) => x.v);
+
+  const tryLoad = (srcIdx) =>
+    new Promise((resolve) => {
+      if (srcIdx >= shuffled.length) return resolve(null);
+      const src = shuffled[srcIdx];
+      const probe = new Image();
+      probe.onload = () => resolve(src);
+      probe.onerror = () => resolve(tryLoad(srcIdx + 1));
+      probe.src = src;
+    });
+
+  tryLoad(0).then((src) => {
+    if (!src) return;
+    img.src = src;
+  });
+}
+
 async function loadGreeterLines() {
   try {
     const res = await fetch("./characters/greeter-lines.json", { cache: "no-cache" });
@@ -301,6 +336,7 @@ document.documentElement.classList.add("js");
 setupFooterYear();
 setupSmoothScrollOffset();
 setupHeroStagger();
+setupHeroBgRotation();
 setupReveal();
 setupGreeter();
 
