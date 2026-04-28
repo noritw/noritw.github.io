@@ -248,6 +248,7 @@ function setupGreeter() {
     top: "#top",
     what: "#what",
     works: "#works",
+    aw: "#work-aw",
     highlights: 'section[aria-label="活動與分享"]',
     about: "#about",
     contact: "#contact",
