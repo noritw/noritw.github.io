@@ -315,6 +315,10 @@ a:hover {
   gap: 14px;
 }
 
+.cards.two {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 @media (max-width: 860px) {
   .cards {
     grid-template-columns: 1fr;
