@@ -352,9 +352,9 @@ a:hover {
   }
 
   .hero-avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
   }
 }
 
@@ -367,16 +367,17 @@ a:hover {
 
 .hero-head {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
   gap: 14px;
 }
 
 .hero-avatar {
-  width: 84px;
-  height: 84px;
-  border-radius: 18px;
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
   object-fit: cover;
-  border: 1px solid rgba(10, 18, 28, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  outline: 1px solid rgba(10, 18, 28, 0.12);
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 10px 24px rgba(10, 20, 30, 0.12);
 }
