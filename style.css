@@ -132,6 +132,32 @@ a:hover {
   background: rgba(0, 20, 40, 0.045);
 }
 
+@media (max-width: 520px) {
+  /* 手機版導覽固定單行，必要時可橫向滑動，避免換行變醜 */
+  .topbar-inner {
+    gap: 10px;
+  }
+
+  .nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .nav::-webkit-scrollbar {
+    height: 0;
+  }
+
+  .nav a {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+}
+
 .section {
   padding: 72px 0;
 }
