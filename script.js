@@ -65,6 +65,7 @@ function setupHeroStagger() {
   });
 }
 
+document.documentElement.classList.add("js");
 setupFooterYear();
 setupSmoothScrollOffset();
 setupHeroStagger();

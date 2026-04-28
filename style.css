@@ -511,15 +511,16 @@ footer {
   background: rgba(255, 255, 255, 0.9);
 }
 
-/* REVEAL ANIMATION */
-[data-reveal] {
+/* REVEAL ANIMATION
+   預設「可見」，只有 JS 啟用時才做淡入，避免 script 沒載入就整頁消失。 */
+.js [data-reveal] {
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 600ms ease, transform 600ms ease;
   will-change: opacity, transform;
 }
 
-[data-reveal].is-in {
+.js [data-reveal].is-in {
   opacity: 1;
   transform: translateY(0);
 }
@@ -528,7 +529,7 @@ footer {
   html {
     scroll-behavior: auto;
   }
-  [data-reveal] {
+  .js [data-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
