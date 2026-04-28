@@ -189,6 +189,10 @@ function setupGreeter() {
   let lines = null;
   let cooldownUntil = 0;
   const autoSpoken = new Set();
+  const recentClicks = {
+    KT: [],
+    YT: [],
+  };
 
   const positionBubbleNear = (btn) => {
     if (!bubble) return;
@@ -232,6 +236,31 @@ function setupGreeter() {
     return { text: t, source: "local" };
   };
 
+  const rapidClickReply = (charId) => {
+    const kt = [
+      "……你很閒嗎。",
+      "停。作者要噴錢了。",
+      "我知道你很喜歡，但先停。",
+    ];
+    const yt = [
+      "欸欸欸你也點太快了吧。",
+      "好啦好啦我知道你很愛點，但先休息一下。",
+      "再點下去作者真的會噴錢喔。",
+    ];
+    const pool = charId === "KT" ? kt : yt;
+    return { text: pickRandom(pool), source: "easter" };
+  };
+
+  const recordClick = (charId) => {
+    const now = Date.now();
+    const arr = recentClicks[charId] || [];
+    arr.push(now);
+    // keep last 10s
+    while (arr.length && now - arr[0] > 10_000) arr.shift();
+    recentClicks[charId] = arr;
+    return arr.length;
+  };
+
   const sectionReply = (sectionId) => {
     const sec = lines && lines.sections && lines.sections[sectionId];
     if (!sec) return null;
@@ -255,13 +284,16 @@ function setupGreeter() {
     if (!lines) lines = await loadGreeterLines();
 
     try {
-      // 目前先固定只用台詞庫（後端接好再開）
-      const reply = localReply(charId);
+      const clickCount = recordClick(charId);
+
+      // 連點彩蛋：10 秒內同一隻點太多次，回吐槽並延長冷卻
+      const isRapid = clickCount >= 6;
+      const reply = isRapid ? rapidClickReply(charId) : localReply(charId);
       const flavored = maybeAddTimeFlavor(reply.text, charId);
       const text = clampText(flavored, 60);
       setBubble(charId, text, "");
       if (btn) positionBubbleNear(btn);
-      const cd = 1200;
+      const cd = isRapid ? 4200 : 1200;
       cooldownUntil = Date.now() + Math.min(5000, Math.max(600, cd));
     } catch {
       const reply = localReply(charId);
