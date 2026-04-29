@@ -663,6 +663,13 @@ function setupGreeter() {
   const sleep = (ms) =>
     new Promise((resolve) => window.setTimeout(resolve, Math.max(0, ms | 0)));
 
+  // 發言時把說話的小人拉到最上層，避免被另一隻蓋住
+  const setSpeakerOnTop = (speakerCharId) => {
+    buttons.forEach((b) => {
+      b.style.zIndex = getCharId(b) === speakerCharId ? "200" : "";
+    });
+  };
+
   const playDialogue = async (steps) => {
     const now = Date.now();
     if (now < cooldownUntil) return false;
@@ -682,6 +689,7 @@ function setupGreeter() {
         if (delayMs > 0) await sleep(delayMs);
 
         const anchorBtn = getBtnByChar(speaker);
+        setSpeakerOnTop(speaker);
         setBubble(speaker, clampText(text, 60), "");
         if (anchorBtn) positionBubbleNear(anchorBtn);
       }
@@ -689,7 +697,10 @@ function setupGreeter() {
       cooldownUntil = Date.now() + 1600;
       return true;
     } finally {
-      setTimeout(() => setDisabled(false), Math.max(0, cooldownUntil - Date.now()));
+      setTimeout(() => {
+        setDisabled(false);
+        buttons.forEach((b) => { b.style.zIndex = ""; });
+      }, Math.max(0, cooldownUntil - Date.now()));
       dialoguePlaying = false;
     }
   };
@@ -700,9 +711,11 @@ function setupGreeter() {
     if (dialoguePlaying) return false;
     if (!lines) lines = await loadGreeterLines();
     const flavored = maybeAddTimeFlavor(text, speaker, lines && lines.timeFlavor);
+    setSpeakerOnTop(speaker);
     setBubble(speaker, clampText(flavored, 60), "");
     if (anchorBtn) positionBubbleNear(anchorBtn);
     cooldownUntil = Date.now() + 1400;
+    setTimeout(() => buttons.forEach((b) => { b.style.zIndex = ""; }), 1400);
     return true;
   };
 
