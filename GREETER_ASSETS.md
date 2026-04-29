@@ -31,7 +31,7 @@
 ## 2) Hero 背景：拖曳期間暫時換圖
 
 ### 檔名規格
-- **拖曳中背景（drag）**：`./assets/images/hero-bg-drag.jpg`
+- **拖曳中背景（drag）**：`./assets/images/hero-bg-drag.png`
 
 ### 觸發時機
 - **開始拖曳（超過拖曳門檻）**：
@@ -41,7 +41,7 @@
   - 如果先前有成功記錄到原始 `src`，則還原
 
 ### 缺檔/載入失敗時的行為
-- 若 `hero-bg-drag.jpg` 不存在或載入失敗：拖曳中 **不換背景**（no-op），放開也不會壞。
+- 若 `hero-bg-drag.png` 不存在或載入失敗：拖曳中 **不換背景**（no-op），放開也不會壞。
 
 ---
 
@@ -52,7 +52,7 @@
 ./assets/images/YT.png
 ./assets/images/KT-drag.png
 ./assets/images/YT-drag.png
-./assets/images/hero-bg-drag.jpg
+./assets/images/hero-bg-drag.png
 ```
 
 ---
