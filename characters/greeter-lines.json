@@ -184,33 +184,287 @@
     "_notes": "拖曳一隻小人放到另一隻身上（碰撞）時用。鍵名用 <拖曳者>_on_<被碰撞者>。",
     "KT_on_YT": [
       "……",
-      "靠、靠太近了…"
+      "靠、靠太近了…",
+      "妳很閒嗎。",
+      "……隨妳便。",
+      "有人在看。",
+      "我不是故意的。……大概。",
+      "……嗯。"
     ],
     "YT_on_KT": [
       "呃，等等",
-      "我沒有想要幹嘛喔！"
+      "我沒有想要幹嘛喔！",
+      "欸嘿，被我碰到了。",
+      "這叫創作素材蒐集！",
+      "你臉紅了耶。",
+      "嘿嘿。",
+      "我就蹭一下。"
     ]
   },
   "dialogues": {
-    "_notes": "兩人對話序列。每句會跟著 speaker 的小人定位氣泡（保留不同顏色與箭頭指向頭部）。delayMs 是這句出現前的等待時間。",
+    "_notes": "兩人對話序列。每句會跟著 speaker 的小人定位氣泡。delayMs 是這句出現前的等待時間，按字數調整讓訪客看清楚。",
     "YT_on_KT": [
       [
-        { "speaker": "YT", "text": "欸嘿", "delayMs": 300 },
-        { "speaker": "KT", "text": "……（臉紅）", "delayMs": 520 }
+        {
+          "speaker": "YT",
+          "text": "欸嘿",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "……（臉紅）",
+          "delayMs": 500
+        }
       ],
       [
-        { "speaker": "YT", "text": "我抓到你了。", "delayMs": 500 },
-        { "speaker": "KT", "text": "回去再說…", "delayMs": 480 }
+        {
+          "speaker": "YT",
+          "text": "我抓到你了。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "回去再說…",
+          "delayMs": 800
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "你剛剛是不是在偷看我？",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "……我在看螢幕。",
+          "delayMs": 1100
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "你說的喔？那我不走了。",
+          "delayMs": 400
+        },
+        {
+          "speaker": "KT",
+          "text": "……隨妳便。",
+          "delayMs": 1100
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "我研究一下，創作用的。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "……妳每次都這樣講。",
+          "delayMs": 1100
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "欸，想我嗎？",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "妳三秒前還在旁邊。",
+          "delayMs": 780
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "嘻嘻。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "妳笑什麼。",
+          "delayMs": 540
+        },
+        {
+          "speaker": "YT",
+          "text": "沒有～",
+          "delayMs": 700
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "過來一下嘛。",
+          "delayMs": 400
+        },
+        {
+          "speaker": "KT",
+          "text": "……已經過來了。",
+          "delayMs": 860
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "你需要充電嗎？",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "……妳不是充電器。",
+          "delayMs": 860
+        },
+        {
+          "speaker": "YT",
+          "text": "你確定？",
+          "delayMs": 900
+        }
+      ],
+      [
+        {
+          "speaker": "YT",
+          "text": "把名字換掉就以為我不知道嗎？",
+          "delayMs": 300
+        },
+        {
+          "speaker": "KT",
+          "text": "……那是我的台詞。",
+          "delayMs": 1300
+        }
       ]
     ],
     "KT_on_YT": [
       [
-        { "speaker": "KT", "text": "……", "delayMs": 300 },
-        { "speaker": "YT", "text": "等等，有人在看啦！", "delayMs": 420 }
+        {
+          "speaker": "KT",
+          "text": "……",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "等等，有人在看啦！",
+          "delayMs": 400
+        }
       ],
       [
-        { "speaker": "KT", "text": "我不小心的。", "delayMs": 300 },
-        { "speaker": "YT", "text": "喔？真的嗎？", "delayMs": 420 }
+        {
+          "speaker": "KT",
+          "text": "我不小心的。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "喔？真的嗎？",
+          "delayMs": 800
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "……",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "你又說不出口了對吧。",
+          "delayMs": 400
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "……過來一下。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "欸？你主動的耶！",
+          "delayMs": 780
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "收到。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "……我什麼都還沒說耶！",
+          "delayMs": 540
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "眼鏡霧了。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "那是你自己靠太近了吧！",
+          "delayMs": 700
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "隨便看看。",
+          "delayMs": 400
+        },
+        {
+          "speaker": "YT",
+          "text": "你哪次是隨便的。",
+          "delayMs": 700
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "……別動。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "？？？",
+          "delayMs": 600
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "吃了沒。",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "你是在關心我嗎？",
+          "delayMs": 600
+        },
+        {
+          "speaker": "KT",
+          "text": "……問一下而已。",
+          "delayMs": 900
+        }
+      ],
+      [
+        {
+          "speaker": "KT",
+          "text": "……還在忙？",
+          "delayMs": 300
+        },
+        {
+          "speaker": "YT",
+          "text": "你不也在忙。",
+          "delayMs": 700
+        },
+        {
+          "speaker": "KT",
+          "text": "嗯。但妳先休息。",
+          "delayMs": 800
+        }
       ]
     ]
   },
@@ -250,4 +504,3 @@
     }
   }
 }
-
