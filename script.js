@@ -218,22 +218,34 @@ function setupGreeter() {
     bubble.style.removeProperty("--tail-x");
     bubble.style.removeProperty("--tail-y");
 
-    // 取人物頭部到氣泡四邊的最近邊，讓箭頭更貼近頭部位置
-    const dLeft = Math.abs(relX - 0);
-    const dRight = Math.abs(relX - bw);
-    const dTop = Math.abs(relY - 0);
-    const dBottom = Math.abs(relY - bh);
-    const minD = Math.min(dLeft, dRight, dTop, dBottom);
+    // 從氣泡中心朝人物頭部做射線，命中哪條邊就把箭頭放在哪條邊
+    const cx = bw / 2;
+    const cy = bh / 2;
+    const dx = relX - cx;
+    const dy = relY - cy;
 
-    if (minD === dLeft || minD === dRight) {
-      const tailY = Math.max(edgePad, Math.min(relY, bh - edgePad));
+    const tx =
+      dx === 0
+        ? Number.POSITIVE_INFINITY
+        : ((dx > 0 ? bw : 0) - cx) / dx;
+    const ty =
+      dy === 0
+        ? Number.POSITIVE_INFINITY
+        : ((dy > 0 ? bh : 0) - cy) / dy;
+    const hitVertical = tx > 0 && tx <= ty;
+    const t = hitVertical ? tx : ty;
+    const ix = cx + dx * t;
+    const iy = cy + dy * t;
+
+    if (hitVertical) {
+      const tailY = Math.max(edgePad, Math.min(iy, bh - edgePad));
       bubble.style.setProperty("--tail-y", `${Math.round(tailY)}px`);
-      if (dLeft <= dRight) bubble.classList.add("tail-left");
+      if (dx < 0) bubble.classList.add("tail-left");
       else bubble.classList.add("tail-right");
     } else {
-      const tailX = Math.max(edgePad, Math.min(relX, bw - edgePad));
+      const tailX = Math.max(edgePad, Math.min(ix, bw - edgePad));
       bubble.style.setProperty("--tail-x", `${Math.round(tailX)}px`);
-      if (dTop <= dBottom) bubble.classList.add("tail-top");
+      if (dy < 0) bubble.classList.add("tail-top");
       else bubble.classList.add("tail-bottom");
     }
   };
