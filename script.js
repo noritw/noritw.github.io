@@ -801,8 +801,7 @@ function setupGreeter() {
     if (!btn) return;
 
     if (moved) {
-      // snap into view, then trigger drop logic
-      snapBtnIntoViewport(btn);
+      // no snap-back; keep the dropped position
       await handleDropTriggers(btn, charId);
     }
 
