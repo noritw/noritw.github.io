@@ -214,9 +214,18 @@ function setupGreeter() {
     const dx = relX - bw / 2;
     const dy = relY - bh / 2;
     const edgePad = 18;
+    const halfW = Math.max(1, bw / 2);
+    const halfH = Math.max(1, bh / 2);
+    const nx = Math.abs(dx) / halfW;
+    const ny = Math.abs(dy) / halfH;
 
     bubble.classList.remove("tail-left", "tail-right", "tail-top", "tail-bottom");
-    if (Math.abs(dx) >= Math.abs(dy)) {
+    // 先重置，避免前一次方向殘留造成偶發錯位
+    bubble.style.removeProperty("--tail-x");
+    bubble.style.removeProperty("--tail-y");
+
+    // 用正規化距離判斷最接近哪個邊，兼顧手機/桌機不同比例
+    if (nx >= ny) {
       // 人物主要在氣泡左右側：箭頭放在左右邊
       const tailY = Math.max(edgePad, Math.min(relY, bh - edgePad));
       bubble.style.setProperty("--tail-y", `${Math.round(tailY)}px`);
