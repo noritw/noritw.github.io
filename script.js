@@ -965,10 +965,12 @@ function setupGreeter() {
 
   // --- 閒置提示邏輯 (Idle Drag Hint) ---
   let idleHintTimer = null;
+  let hintWasShown = false;
+
   const startIdleHintTimer = () => {
-    if (sessionStorage.getItem("greeter-hint-shown")) return;
+    if (hintWasShown) return;
     idleHintTimer = setTimeout(async () => {
-      if (dialoguePlaying) return;
+      if (dialoguePlaying || hintWasShown) return;
       if (!lines) lines = await loadGreeterLines();
       if (!lines || !lines.dragHints) return;
 
@@ -981,7 +983,7 @@ function setupGreeter() {
       const btn = getBtnByChar(speaker);
       if (btn) {
         triggerSay(speaker, text, btn);
-        sessionStorage.setItem("greeter-hint-shown", "true");
+        hintWasShown = true;
       }
     }, 3000);
   };
@@ -991,9 +993,10 @@ function setupGreeter() {
       clearTimeout(idleHintTimer);
       idleHintTimer = null;
     }
+    hintWasShown = true; // 只要動過就不再提示
   };
 
-  // 任何互動都視為已知道如何操作，清除提示
+  // 任何互動都視為已知道如何操作，不再提示
   buttons.forEach((btn) => {
     btn.addEventListener("pointerdown", clearIdleHint, { once: true });
   });
