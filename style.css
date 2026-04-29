@@ -40,11 +40,18 @@ body {
   margin: 0;
   color: var(--text);
   background: transparent;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
   line-height: 1.55;
   letter-spacing: 0.2px;
   overflow-x: clip;
+}
+
+main {
+  flex: 1;
 }
 
 img {
@@ -170,7 +177,7 @@ a:hover {
   position: absolute;
   z-index: 0;
   pointer-events: none;
-  filter: blur(0.5px);
+  filter: none;
 }
 
 .section.has-color-blocks::before {
@@ -185,6 +192,7 @@ a:hover {
     var(--block-a1, rgba(96, 185, 255, 0.22)),
     var(--block-a2, rgba(54, 214, 198, 0.08))
   );
+  opacity: 1;
 }
 
 .section.has-color-blocks::after {
@@ -199,41 +207,41 @@ a:hover {
     var(--block-b1, rgba(255, 138, 61, 0.16)),
     var(--block-b2, rgba(123, 220, 87, 0.08))
   );
-  opacity: 0.92;
+  opacity: 1;
 }
 
 .section.has-color-blocks.block-sky {
-  --block-a1: rgba(96, 185, 255, 0.26);
-  --block-a2: rgba(54, 214, 198, 0.1);
-  --block-b1: rgba(96, 185, 255, 0.12);
-  --block-b2: rgba(255, 255, 255, 0.06);
+  --block-a1: rgba(96, 185, 255, 0.66);
+  --block-a2: rgba(54, 214, 198, 0.46);
+  --block-b1: rgba(96, 185, 255, 0.5);
+  --block-b2: rgba(255, 255, 255, 0.26);
   --block-tilt-a: -9deg;
   --block-tilt-b: 11deg;
 }
 
 .section.has-color-blocks.block-mint {
-  --block-a1: rgba(54, 214, 198, 0.24);
-  --block-a2: rgba(123, 220, 87, 0.12);
-  --block-b1: rgba(96, 185, 255, 0.14);
-  --block-b2: rgba(255, 255, 255, 0.05);
+  --block-a1: rgba(54, 214, 198, 0.64);
+  --block-a2: rgba(123, 220, 87, 0.44);
+  --block-b1: rgba(96, 185, 255, 0.48);
+  --block-b2: rgba(255, 255, 255, 0.24);
   --block-tilt-a: -13deg;
   --block-tilt-b: 8deg;
 }
 
 .section.has-color-blocks.block-peach {
-  --block-a1: rgba(255, 138, 61, 0.2);
-  --block-a2: rgba(255, 184, 107, 0.12);
-  --block-b1: rgba(96, 185, 255, 0.12);
-  --block-b2: rgba(54, 214, 198, 0.08);
+  --block-a1: rgba(255, 138, 61, 0.6);
+  --block-a2: rgba(255, 184, 107, 0.46);
+  --block-b1: rgba(96, 185, 255, 0.46);
+  --block-b2: rgba(54, 214, 198, 0.34);
   --block-tilt-a: -7deg;
   --block-tilt-b: 14deg;
 }
 
 .section.has-color-blocks.block-lilac {
-  --block-a1: rgba(146, 140, 255, 0.18);
-  --block-a2: rgba(96, 185, 255, 0.12);
-  --block-b1: rgba(54, 214, 198, 0.12);
-  --block-b2: rgba(255, 255, 255, 0.05);
+  --block-a1: rgba(146, 140, 255, 0.56);
+  --block-a2: rgba(96, 185, 255, 0.42);
+  --block-b1: rgba(54, 214, 198, 0.42);
+  --block-b2: rgba(255, 255, 255, 0.24);
   --block-tilt-a: -11deg;
   --block-tilt-b: 9deg;
 }
@@ -458,9 +466,9 @@ a:hover {
     width: min(320px, calc(100vw - 16px));
   }
 
-  /* Footer 加高，避免被浮動小人擋住 */
+  /* Footer 不再整體抬高，改由 spacer 承擔避讓高度 */
   footer {
-    padding-bottom: 140px;
+    padding-bottom: 0;
   }
 }
 
@@ -472,6 +480,7 @@ a:hover {
   .mobile-footer-spacer {
     display: block;
     height: 160px;
+    background: rgba(247, 251, 255, 0.9);
   }
 }
 
@@ -805,6 +814,15 @@ a:hover {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   align-items: center;
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.62)
+  );
+  box-shadow: var(--shadow);
+  padding: 14px;
 }
 
 .work + .work {
@@ -917,28 +935,58 @@ a:hover {
 
 /* FOOTER */
 footer {
-  padding: 26px 0 44px;
-  border-top: 1px solid rgba(10, 18, 28, 0.08);
+  padding: 26px 0 0;
+  border-top: 0;
   color: var(--muted);
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.55)
-  );
+  background: transparent;
 }
 
 .footer-inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 14px;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .social {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  width: 100%;
+  order: 1;
+}
+
+.footer-meta {
+  width: 100%;
+  order: 2;
+  margin-top: 8px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(247, 251, 255, 0.78);
+  box-shadow: 0 0 0 100vmax rgba(247, 251, 255, 0.78);
+  clip-path: inset(0 -100vmax);
+}
+
+.footer-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 14px;
+  width: min(var(--max), 100% - 36px);
+  margin: 0 auto;
+  padding: 0 18px;
+}
+
+@media (max-width: 720px) {
+  .footer-meta-row {
+    flex-wrap: wrap;
+    white-space: normal;
+    gap: 6px 12px;
+  }
 }
 
 .social a {
