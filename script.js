@@ -759,6 +759,7 @@ function setupGreeter() {
       dragState.moved = true;
       suppressClickUntil = Date.now() + 600;
       document.body.classList.add("is-greeter-dragging");
+      if (bubble) bubble.hidden = true;
       await setCharDraggingVisual(btn, true);
       await maybeSetHeroBgDragging(true);
     }
