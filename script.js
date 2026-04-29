@@ -205,6 +205,11 @@ function setupGreeter() {
     bubble.style.top = `${Math.round(top)}px`;
     bubble.style.right = "auto";
     bubble.style.bottom = "auto";
+
+    // 讓箭頭垂直位置對齊角色中心，避免看起來沒指到人
+    const targetY = rect.top + rect.height / 2 - top;
+    const tailY = Math.max(18, Math.min(targetY, bh - 18));
+    bubble.style.setProperty("--tail-top", `${Math.round(tailY)}px`);
   };
 
   const setBubble = (speaker, text, sub) => {
