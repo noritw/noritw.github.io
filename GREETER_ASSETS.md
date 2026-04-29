@@ -28,20 +28,23 @@
 
 ---
 
-## 2) Hero 背景：拖曳期間暫時換圖
+## 2) 全站手繪 deco 背景：拖曳期間暫時換圖（`.global-deco-image`）
 
 ### 檔名規格
-- **拖曳中背景（drag）**：`./assets/images/hero-bg-drag.png`
+- **拖曳中背景（drag）**（依序嘗試，找到存在的第一張就用）：
+  - `./assets/images/deco-drag.png`
+  - `./assets/images/deco-drag-2.png`
+  - `./assets/images/deco-drag-3.png`
 
 ### 觸發時機
 - **開始拖曳（超過拖曳門檻）**：
-  - 嘗試把 `#heroBgImg` 的 `src` 換成 `hero-bg-drag.jpg`
-  - 同時記住「拖曳前的 `src`」以便還原
+  - 嘗試把 `.global-deco-image` 的 CSS 變數 `--global-deco-image` 換成拖曳用 deco
+  - 同時記住「拖曳前的 `--global-deco-image`」以便還原
 - **拖曳結束（放開 / cancel）**：
-  - 如果先前有成功記錄到原始 `src`，則還原
+  - 如果先前有成功記錄到原始 `--global-deco-image`，則還原
 
 ### 缺檔/載入失敗時的行為
-- 若 `hero-bg-drag.png` 不存在或載入失敗：拖曳中 **不換背景**（no-op），放開也不會壞。
+- 若 `deco-drag*.png` 都不存在或載入失敗：拖曳中 **不換背景**（no-op），放開也不會壞。
 
 ---
 
@@ -52,7 +55,9 @@
 ./assets/images/YT.png
 ./assets/images/KT-drag.png
 ./assets/images/YT-drag.png
-./assets/images/hero-bg-drag.png
+./assets/images/deco-drag.png
+./assets/images/deco-drag-2.png
+./assets/images/deco-drag-3.png
 ```
 
 ---
