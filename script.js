@@ -142,33 +142,22 @@ function getTimeContext(now = new Date()) {
   return { hour, slot, timeStr };
 }
 
-function maybeAddTimeFlavor(baseText, speaker) {
+function maybeAddTimeFlavor(baseText, speaker, config) {
   const t = (baseText || "").trim();
   if (!t) return t;
 
+  const flavor = config && typeof config === "object" ? config : null;
+  if (!flavor) return t;
+  const chance = Number.isFinite(flavor.chance) ? flavor.chance : 0;
+  if (chance <= 0) return t;
+
   // Avoid making every line time-aware; keep it occasional.
-  if (Math.random() > 0.38) return t;
+  if (Math.random() > chance) return t;
 
   const { slot } = getTimeContext();
-  const kt = {
-    lateNight: "……這時間還醒著？",
-    early: "這麼早起來？",
-    morning: "早。",
-    noon: "中午了。去吃東西。",
-    afternoon: "下午了，作者進度還在跑。",
-    dinner: "晚餐吃了沒。",
-    night: "晚了，別太拼。",
-  };
-  const yt = {
-    lateNight: "欸……凌晨了還不睡？",
-    early: "你也太早了吧。",
-    morning: "早安～",
-    noon: "中午了，要不要先去吃午餐？",
-    afternoon: "下午模式開啟。加油一下就好。",
-    dinner: "晚餐吃了沒？作者會忘記。",
-    night: "晚點記得休息喔。",
-  };
-
+  const kt = flavor.KT && typeof flavor.KT === "object" ? flavor.KT : null;
+  const yt = flavor.YT && typeof flavor.YT === "object" ? flavor.YT : null;
+  if (!kt || !yt) return t;
   const tail = (speaker === "KT" ? kt : yt)[slot];
   if (!tail) return t;
 
@@ -289,7 +278,7 @@ function setupGreeter() {
       // 連點彩蛋：10 秒內同一隻點太多次，回吐槽並延長冷卻
       const isRapid = clickCount >= 6;
       const reply = isRapid ? rapidClickReply(charId) : localReply(charId);
-      const flavored = maybeAddTimeFlavor(reply.text, charId);
+      const flavored = maybeAddTimeFlavor(reply.text, charId, lines && lines.timeFlavor);
       const text = clampText(flavored, 60);
       setBubble(charId, text, "");
       if (btn) positionBubbleNear(btn);
@@ -297,7 +286,7 @@ function setupGreeter() {
       cooldownUntil = Date.now() + Math.min(5000, Math.max(600, cd));
     } catch {
       const reply = localReply(charId);
-      const flavored = maybeAddTimeFlavor(reply.text, charId);
+      const flavored = maybeAddTimeFlavor(reply.text, charId, lines && lines.timeFlavor);
       setBubble(charId, clampText(flavored, 60), "");
       if (btn) positionBubbleNear(btn);
       cooldownUntil = Date.now() + 1200;
@@ -336,7 +325,7 @@ function setupGreeter() {
 
     // 找對應角色按鈕定位氣泡
     const btn = qs(`[data-greeter="${r.speaker}"]`);
-    const flavored = maybeAddTimeFlavor(r.text, r.speaker);
+    const flavored = maybeAddTimeFlavor(r.text, r.speaker, lines && lines.timeFlavor);
     setBubble(r.speaker, clampText(flavored, 60), "");
     if (btn) positionBubbleNear(btn);
     cooldownUntil = Date.now() + 1400;
