@@ -15,6 +15,7 @@
   --accent3: #7bdc57; /* green */
   /* 少量重點（橘） */
   --hot: #ff8a3d;
+  --deco-opacity: 0.5;
 
   --radius: 18px;
   --max: 1120px;
@@ -258,13 +259,7 @@ a:hover {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  opacity: 0.2;
-}
-
-@media (max-width: 860px) {
-  .global-deco-image {
-    opacity: 0.16;
-  }
+  opacity: var(--deco-opacity);
 }
 
 .section-title {
