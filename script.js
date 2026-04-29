@@ -517,8 +517,8 @@ function setupGreeter() {
 
   const maybeSetGlobalDecoDragging = (() => {
     const dragSrcs = [
-      "./assets/images/deco-drag.png",
-      "./assets/images/deco-drag.jpg"
+      "./assets/images/deco-drag.jpg",
+      "./assets/images/deco-drag.png"
     ];
 
     const setCssUrl = (el, urlValue) => {
