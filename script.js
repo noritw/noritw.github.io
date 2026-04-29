@@ -963,6 +963,43 @@ function setupGreeter() {
     cooldownUntil = Date.now() + 1400;
   };
 
+  // --- 閒置提示邏輯 (Idle Drag Hint) ---
+  let idleHintTimer = null;
+  const startIdleHintTimer = () => {
+    if (sessionStorage.getItem("greeter-hint-shown")) return;
+    idleHintTimer = setTimeout(async () => {
+      if (dialoguePlaying) return;
+      if (!lines) lines = await loadGreeterLines();
+      if (!lines || !lines.dragHints) return;
+
+      const chars = ["KT", "YT"];
+      const speaker = chars[Math.floor(Math.random() * chars.length)];
+      const pool = lines.dragHints[speaker];
+      if (!pool || !pool.length) return;
+
+      const text = pool[Math.floor(Math.random() * pool.length)];
+      const btn = getBtnByChar(speaker);
+      if (btn) {
+        triggerSay(speaker, text, btn);
+        sessionStorage.setItem("greeter-hint-shown", "true");
+      }
+    }, 3000);
+  };
+
+  const clearIdleHint = () => {
+    if (idleHintTimer) {
+      clearTimeout(idleHintTimer);
+      idleHintTimer = null;
+    }
+  };
+
+  // 任何互動都視為已知道如何操作，清除提示
+  buttons.forEach((btn) => {
+    btn.addEventListener("pointerdown", clearIdleHint, { once: true });
+  });
+
+  startIdleHintTimer();
+
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!reduce) {
     const io = new IntersectionObserver(
