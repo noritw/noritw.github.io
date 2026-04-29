@@ -735,7 +735,14 @@ function setupGreeter() {
       if (r) {
         const anchorBtn = getBtnByChar(r.speaker) || dragBtn;
         await triggerSay(r.speaker, r.text, anchorBtn);
+        return;
       }
+    }
+
+    // 3) Fallback: no triggers hit -> use the original random click lines
+    const fallback = localReply(dragChar);
+    if (fallback && fallback.text) {
+      await triggerSay(dragChar, fallback.text, dragBtn);
     }
   };
 
