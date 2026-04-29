@@ -550,7 +550,12 @@ function setupGreeter() {
       if (t) return { speaker: dragChar, text: t, source: `dropzone:${zoneId}` };
     }
 
-    const sec = lines && lines.sections && lines.sections[zoneId];
+    let sec = lines && lines.sections && lines.sections[zoneId];
+    // Allow sub-zones under "what" cards to reuse the same lines:
+    // what_indie / what_techart / what_teaching -> sections.what
+    if (!sec && typeof zoneId === "string" && zoneId.startsWith("what_")) {
+      sec = lines && lines.sections && lines.sections.what;
+    }
     if (!sec) return null;
     if (dragChar !== "KT" && dragChar !== "YT") return sectionReply(zoneId);
 
