@@ -237,9 +237,8 @@ function maybeAddTimeFlavor(baseText, speaker, config) {
   const tail = (speaker === "KT" ? kt : yt)[slot];
   if (!tail) return t;
 
-  // Keep it short; avoid double punctuation.
-  const joiner = t.endsWith("。") || t.endsWith("！") || t.endsWith("？") ? " " : "。";
-  return `${t}${joiner}${tail}`;
+  // 使用換行符號隔開，避免語感銜接奇怪
+  return `${t}\n${tail}`;
 }
 
 function setupGreeter() {
