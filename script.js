@@ -100,6 +100,22 @@ function setupHeroBgRotation() {
   });
 }
 
+function setupSectionColorBlocks() {
+  const sections = qsa("main .section:not(.hero)");
+  if (!sections.length) return;
+
+  const variants = ["block-sky", "block-mint", "block-peach", "block-lilac"];
+  let prev = "";
+
+  sections.forEach((section) => {
+    section.classList.add("has-color-blocks");
+    const pool = variants.filter((v) => v !== prev);
+    const pick = pool[Math.floor(Math.random() * pool.length)] || variants[0];
+    section.classList.add(pick);
+    prev = pick;
+  });
+}
+
 async function loadGreeterLines() {
   try {
     const res = await fetch("./characters/greeter-lines.json", { cache: "no-cache" });
@@ -407,6 +423,7 @@ setupFooterYear();
 setupSmoothScrollOffset();
 setupHeroStagger();
 setupHeroBgRotation();
+setupSectionColorBlocks();
 setupReveal();
 setupGreeter();
 

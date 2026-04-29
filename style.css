@@ -160,6 +160,88 @@ a:hover {
 
 .section {
   padding: 72px 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.section > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Section color blocks (except hero): soft decorative tints */
+.section.has-color-blocks::before,
+.section.has-color-blocks::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+.section.has-color-blocks::before {
+  top: clamp(16px, 4vw, 34px);
+  left: clamp(-90px, -5vw, -48px);
+  width: clamp(220px, 34vw, 480px);
+  height: clamp(120px, 20vw, 240px);
+  border-radius: 999px;
+  transform: rotate(var(--block-tilt-a, -10deg));
+  background: linear-gradient(
+    135deg,
+    var(--block-a1, rgba(96, 185, 255, 0.22)),
+    var(--block-a2, rgba(54, 214, 198, 0.08))
+  );
+}
+
+.section.has-color-blocks::after {
+  right: clamp(-86px, -4vw, -44px);
+  bottom: clamp(8px, 2vw, 24px);
+  width: clamp(180px, 26vw, 360px);
+  height: clamp(120px, 18vw, 220px);
+  border-radius: 36px;
+  transform: rotate(var(--block-tilt-b, 12deg));
+  background: linear-gradient(
+    145deg,
+    var(--block-b1, rgba(255, 138, 61, 0.16)),
+    var(--block-b2, rgba(123, 220, 87, 0.08))
+  );
+  opacity: 0.92;
+}
+
+.section.has-color-blocks.block-sky {
+  --block-a1: rgba(96, 185, 255, 0.26);
+  --block-a2: rgba(54, 214, 198, 0.1);
+  --block-b1: rgba(96, 185, 255, 0.12);
+  --block-b2: rgba(255, 255, 255, 0.06);
+  --block-tilt-a: -9deg;
+  --block-tilt-b: 11deg;
+}
+
+.section.has-color-blocks.block-mint {
+  --block-a1: rgba(54, 214, 198, 0.24);
+  --block-a2: rgba(123, 220, 87, 0.12);
+  --block-b1: rgba(96, 185, 255, 0.14);
+  --block-b2: rgba(255, 255, 255, 0.05);
+  --block-tilt-a: -13deg;
+  --block-tilt-b: 8deg;
+}
+
+.section.has-color-blocks.block-peach {
+  --block-a1: rgba(255, 138, 61, 0.2);
+  --block-a2: rgba(255, 184, 107, 0.12);
+  --block-b1: rgba(96, 185, 255, 0.12);
+  --block-b2: rgba(54, 214, 198, 0.08);
+  --block-tilt-a: -7deg;
+  --block-tilt-b: 14deg;
+}
+
+.section.has-color-blocks.block-lilac {
+  --block-a1: rgba(146, 140, 255, 0.18);
+  --block-a2: rgba(96, 185, 255, 0.12);
+  --block-b1: rgba(54, 214, 198, 0.12);
+  --block-b2: rgba(255, 255, 255, 0.05);
+  --block-tilt-a: -11deg;
+  --block-tilt-b: 9deg;
 }
 
 .section-title {
