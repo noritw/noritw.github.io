@@ -245,57 +245,88 @@ a:hover {
   --bubble-bg: rgba(255, 255, 255, 0.92);
 }
 
-/* 氣泡箭頭：依講話者切換左右 */
+/* 氣泡箭頭：依人物頭部動態決定方向 */
 .greeter-float-bubble::before,
 .greeter-float-bubble::after {
   content: "";
   position: absolute;
-  top: var(--tail-top, 24px);
+  left: var(--tail-x, 24px);
+  top: var(--tail-y, 24px);
   width: 0;
   height: 0;
 }
 
 /* 外框三角形（邊線） */
 .greeter-float-bubble::before {
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
+  border-style: solid;
 }
 
 /* 內層三角形（填色） */
 .greeter-float-bubble::after {
-  border-top: 9px solid transparent;
-  border-bottom: 9px solid transparent;
+  border-style: solid;
 }
 
-.greeter-float-bubble.is-left::before {
+.greeter-float-bubble.tail-left::before {
   left: -11px;
-  border-right: 11px solid var(--bubble-border);
+  border-width: 10px 11px 10px 0;
+  border-color: transparent var(--bubble-border) transparent transparent;
 }
 
-.greeter-float-bubble.is-left::after {
+.greeter-float-bubble.tail-left::after {
   left: -9px;
-  border-right: 10px solid var(--bubble-bg);
+  border-width: 9px 10px 9px 0;
+  border-color: transparent var(--bubble-bg) transparent transparent;
 }
 
-.greeter-float-bubble.is-right::before {
+.greeter-float-bubble.tail-right::before {
   right: -11px;
-  border-left: 11px solid var(--bubble-border);
+  left: auto;
+  border-width: 10px 0 10px 11px;
+  border-color: transparent transparent transparent var(--bubble-border);
 }
 
-.greeter-float-bubble.is-right::after {
+.greeter-float-bubble.tail-right::after {
   right: -9px;
-  border-left: 10px solid var(--bubble-bg);
+  left: auto;
+  border-width: 9px 0 9px 10px;
+  border-color: transparent transparent transparent var(--bubble-bg);
 }
 
-/* KT：左側、冷色框線 */
-.greeter-float-bubble.is-left {
+.greeter-float-bubble.tail-top::before {
+  top: -11px;
+  border-width: 0 10px 11px 10px;
+  border-color: transparent transparent var(--bubble-border) transparent;
+}
+
+.greeter-float-bubble.tail-top::after {
+  top: -9px;
+  border-width: 0 9px 10px 9px;
+  border-color: transparent transparent var(--bubble-bg) transparent;
+}
+
+.greeter-float-bubble.tail-bottom::before {
+  top: auto;
+  bottom: -11px;
+  border-width: 11px 10px 0 10px;
+  border-color: var(--bubble-border) transparent transparent transparent;
+}
+
+.greeter-float-bubble.tail-bottom::after {
+  top: auto;
+  bottom: -9px;
+  border-width: 10px 9px 0 9px;
+  border-color: var(--bubble-bg) transparent transparent transparent;
+}
+
+/* KT：冷色框線 */
+.greeter-float-bubble.speaker-kt {
   --bubble-border: rgba(70, 140, 210, 0.58);
   --bubble-bg: rgba(250, 255, 255, 0.95);
   border-color: var(--bubble-border);
 }
 
-/* YT：右側、暖色框線 */
-.greeter-float-bubble.is-right {
+/* YT：暖色框線 */
+.greeter-float-bubble.speaker-yt {
   --bubble-border: rgba(235, 138, 78, 0.58);
   --bubble-bg: rgba(255, 252, 247, 0.95);
   border-color: var(--bubble-border);

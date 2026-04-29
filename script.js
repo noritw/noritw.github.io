@@ -206,10 +206,29 @@ function setupGreeter() {
     bubble.style.right = "auto";
     bubble.style.bottom = "auto";
 
-    // 讓箭頭垂直位置對齊角色中心，避免看起來沒指到人
-    const targetY = rect.top + rect.height / 2 - top;
-    const tailY = Math.max(18, Math.min(targetY, bh - 18));
-    bubble.style.setProperty("--tail-top", `${Math.round(tailY)}px`);
+    // 以人物頭部作為箭頭目標點，箭頭方向依相對位置動態切換
+    const headX = rect.left + rect.width / 2;
+    const headY = rect.top + rect.height * 0.28;
+    const relX = headX - left;
+    const relY = headY - top;
+    const dx = relX - bw / 2;
+    const dy = relY - bh / 2;
+    const edgePad = 18;
+
+    bubble.classList.remove("tail-left", "tail-right", "tail-top", "tail-bottom");
+    if (Math.abs(dx) >= Math.abs(dy)) {
+      // 人物主要在氣泡左右側：箭頭放在左右邊
+      const tailY = Math.max(edgePad, Math.min(relY, bh - edgePad));
+      bubble.style.setProperty("--tail-y", `${Math.round(tailY)}px`);
+      if (dx < 0) bubble.classList.add("tail-left");
+      else bubble.classList.add("tail-right");
+    } else {
+      // 人物主要在氣泡上下側：箭頭放在上下邊
+      const tailX = Math.max(edgePad, Math.min(relX, bw - edgePad));
+      bubble.style.setProperty("--tail-x", `${Math.round(tailX)}px`);
+      if (dy < 0) bubble.classList.add("tail-top");
+      else bubble.classList.add("tail-bottom");
+    }
   };
 
   const setBubble = (speaker, text, sub) => {
@@ -217,9 +236,9 @@ function setupGreeter() {
     if (textEl) textEl.textContent = text || "";
     if (subEl) subEl.textContent = sub || "";
     if (bubble) {
-      bubble.classList.remove("is-left", "is-right");
-      if (speaker === "KT") bubble.classList.add("is-left");
-      else if (speaker === "YT") bubble.classList.add("is-right");
+      bubble.classList.remove("speaker-kt", "speaker-yt");
+      if (speaker === "KT") bubble.classList.add("speaker-kt");
+      else if (speaker === "YT") bubble.classList.add("speaker-yt");
     }
     if (bubble) bubble.hidden = false;
   };
