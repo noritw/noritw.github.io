@@ -28,12 +28,14 @@
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
+  /* 
   background: linear-gradient(
     180deg,
     #f4f5f7 0%,
     #e7e9ed 42%,
     #d6dae0 100%
   );
+  */
 }
 
 body {
