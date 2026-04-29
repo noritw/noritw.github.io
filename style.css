@@ -733,6 +733,18 @@ a:hover {
   gap: 14px;
 }
 
+.hero-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.hero-avatar-wrap .greeter-dropzone {
+  position: absolute;
+  inset: -8px;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .hero-avatar {
   width: 112px;
   height: 112px;
