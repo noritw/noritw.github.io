@@ -161,14 +161,8 @@ async function loadGreeterLines() {
     YT: ["……", "你來了就好，先坐。", "存檔、備份、再存檔。"],
     meta: ["……", "（沉默）……作者在忙。", "今天先到這裡。作者要回去做事。"],
     dropzones: {
-      works: {
-        KT: ["作品在這。想看就去點。"],
-        YT: ["這裡是作品區～喜歡就去看看。"],
-      },
-      contact: {
-        KT: ["要合作就寄信。需求寫清楚。"],
-        YT: ["想合作就寄信～作者會回的。"],
-      },
+      _notes:
+        "可選：拖曳放下（drop）命中特定區域時的「拖曳專用」台詞。若不填，前端會自動重用 sections.<zoneId> 的台詞（避免維護兩套）。",
     },
     collisions: {
       KT_on_YT: ["別擋路。"],
@@ -523,13 +517,31 @@ function setupGreeter() {
 
   const getDropzones = () => qsa("[data-dropzone]");
 
-  const dropzoneReply = (zoneId, speaker) => {
+  const dropzoneReply = (zoneId, dragChar) => {
+    // Goal: avoid maintaining two sets of the same content.
+    // Priority:
+    // 1) dropzones[zoneId][dragChar] (drag-specific lines, optional)
+    // 2) sections[zoneId][dragChar]  (reuse existing "auto speak on section enter" lines)
+    // 3) sections[zoneId][otherChar] (fallback to other speaker if needed)
     const dz = lines && lines.dropzones && lines.dropzones[zoneId];
-    if (!dz) return null;
-    const pool = (speaker && dz[speaker]) || [];
-    const t = pickRandom(pool);
-    if (!t) return null;
-    return { speaker, text: t, source: `dropzone:${zoneId}` };
+    if (dz && (dragChar === "KT" || dragChar === "YT")) {
+      const pool = dz[dragChar] || [];
+      const t = pickRandom(pool);
+      if (t) return { speaker: dragChar, text: t, source: `dropzone:${zoneId}` };
+    }
+
+    const sec = lines && lines.sections && lines.sections[zoneId];
+    if (!sec) return null;
+    if (dragChar !== "KT" && dragChar !== "YT") return sectionReply(zoneId);
+
+    const primary = pickRandom(sec[dragChar] || []);
+    if (primary) return { speaker: dragChar, text: primary, source: `section:${zoneId}` };
+
+    const other = dragChar === "KT" ? "YT" : "KT";
+    const fallback = pickRandom(sec[other] || []);
+    if (fallback) return { speaker: other, text: fallback, source: `section:${zoneId}` };
+
+    return null;
   };
 
   const normalizeDialogueSteps = (seq) => {
@@ -701,7 +713,8 @@ function setupGreeter() {
     if (best) {
       const r = dropzoneReply(best.zoneId, dragChar);
       if (r) {
-        await triggerSay(r.speaker, r.text, dragBtn);
+        const anchorBtn = getBtnByChar(r.speaker) || dragBtn;
+        await triggerSay(r.speaker, r.text, anchorBtn);
       }
     }
   };
