@@ -117,14 +117,13 @@ function setupSectionColorBlocks() {
 }
 
 function setupGlobalDecoImage() {
-  const candidates = [
-    "./assets/images/deco-1.png",
-    "./assets/images/deco-1.jpg",
-    "./assets/images/deco-2.png",
-    "./assets/images/deco-2.jpg",
-    "./assets/images/deco-3.png",
-    "./assets/images/deco-3.jpg",
-  ];
+  // 💡[設定] 隨機背景圖片的總數量：如果您新增或減少了 deco-*.png/jpg 檔案，請在此修改數字
+  const DECO_COUNT = 5;
+  const candidates = [];
+  for (let i = 1; i <= DECO_COUNT; i++) {
+    candidates.push(`./assets/images/deco-${i}.png`);
+    candidates.push(`./assets/images/deco-${i}.jpg`);
+  }
   if (!candidates.length) return;
 
   const unique = Array.from(new Set(candidates));
