@@ -478,23 +478,53 @@ function setupGreeter() {
       probe.src = nextSrc;
     });
 
-  const maybeSetHeroBgDragging = (() => {
-    const heroImg = qs("#heroBgImg");
-    let prev = null;
-    const dragSrc = "./assets/images/hero-bg-drag.png";
+  const maybeSetGlobalDecoDragging = (() => {
+    let prevCssUrl = null;
+    const candidates = [
+      "./assets/images/deco-drag.png",
+      "./assets/images/deco-drag-2.png",
+      "./assets/images/deco-drag-3.png",
+    ];
+
+    const getCssUrl = (el) => {
+      if (!el) return null;
+      const v = el.style.getPropertyValue("--global-deco-image");
+      return v && v.trim() ? v.trim() : null;
+    };
+
+    const setCssUrl = (el, urlValue) => {
+      if (!el) return;
+      if (!urlValue) el.style.removeProperty("--global-deco-image");
+      else el.style.setProperty("--global-deco-image", urlValue);
+    };
+
+    const tryLoadFirst = async (list) => {
+      for (const src of list) {
+        // probe only; do not touch DOM on failure
+        const ok = await new Promise((resolve) => {
+          const probe = new Image();
+          probe.onload = () => resolve(true);
+          probe.onerror = () => resolve(false);
+          probe.src = src;
+        });
+        if (ok) return src;
+      }
+      return null;
+    };
+
     return async (isDragging) => {
-      if (!heroImg) return;
+      const deco = qs(".global-deco-image");
+      if (!deco) return;
+
       if (isDragging) {
-        if (!prev) prev = heroImg.src;
-        const ok = await trySwapImageSrc(heroImg, dragSrc);
-        if (!ok) {
-          // no-op if drag image is not available
-        }
+        if (!prevCssUrl) prevCssUrl = getCssUrl(deco);
+        const pick = await tryLoadFirst(candidates);
+        if (!pick) return;
+        setCssUrl(deco, `url("${pick}")`);
       } else {
-        if (prev) {
-          heroImg.src = prev;
-          prev = null;
-        }
+        if (!prevCssUrl) return;
+        setCssUrl(deco, prevCssUrl);
+        prevCssUrl = null;
       }
     };
   })();
@@ -761,7 +791,7 @@ function setupGreeter() {
       document.body.classList.add("is-greeter-dragging");
       if (bubble) bubble.hidden = true;
       await setCharDraggingVisual(btn, true);
-      await maybeSetHeroBgDragging(true);
+      await maybeSetGlobalDecoDragging(true);
     }
 
     const rect = btn.getBoundingClientRect();
@@ -807,7 +837,7 @@ function setupGreeter() {
 
     document.body.classList.remove("is-greeter-dragging");
     await setCharDraggingVisual(btn, false);
-    await maybeSetHeroBgDragging(false);
+    await maybeSetGlobalDecoDragging(false);
   };
 
   buttons.forEach((btn) => {
