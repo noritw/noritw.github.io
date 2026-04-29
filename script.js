@@ -119,8 +119,11 @@ function setupSectionColorBlocks() {
 function setupGlobalDecoImage() {
   const candidates = [
     "./assets/images/deco-1.png",
+    "./assets/images/deco-1.jpg",
     "./assets/images/deco-2.png",
+    "./assets/images/deco-2.jpg",
     "./assets/images/deco-3.png",
+    "./assets/images/deco-3.jpg",
   ];
   if (!candidates.length) return;
 
@@ -407,11 +410,46 @@ function setupGreeter() {
 
       // 連點彩蛋：10 秒內同一隻點太多次，回吐槽並延長冷卻
       const isRapid = clickCount >= 6;
-      const reply = isRapid ? rapidClickReply(charId) : localReply(charId);
-      const flavored = maybeAddTimeFlavor(reply.text, charId, lines && lines.timeFlavor);
+      let reply = null;
+      let replySpeaker = charId;
+      let anchorBtn = btn;
+
+      if (isRapid) {
+        reply = rapidClickReply(charId);
+      } else {
+        if (btn) {
+          const btnRect = btn.getBoundingClientRect();
+          const pBtn = { left: btnRect.left - 20, top: btnRect.top - 20, right: btnRect.right + 20, bottom: btnRect.bottom + 20 };
+          const zones = getDropzones();
+          let best = null;
+          for (const z of zones) {
+            const zoneId = z.getAttribute("data-dropzone");
+            if (!zoneId) continue;
+            const zr = z.getBoundingClientRect();
+            const pZr = { left: zr.left - 20, top: zr.top - 20, right: zr.right + 20, bottom: zr.bottom + 20 };
+            const area = rectOverlapArea(pBtn, pZr);
+            if (area <= 0) continue;
+            if (!best || area > best.area) best = { zoneId, area };
+          }
+          if (best) {
+            reply = dropzoneReply(best.zoneId, charId);
+          }
+        }
+        if (!reply) {
+          reply = localReply(charId);
+        }
+      }
+
+      replySpeaker = reply.speaker || charId;
+      if (replySpeaker !== charId) {
+        const altBtn = getBtnByChar(replySpeaker);
+        if (altBtn) anchorBtn = altBtn;
+      }
+
+      const flavored = maybeAddTimeFlavor(reply.text, replySpeaker, lines && lines.timeFlavor);
       const text = clampText(flavored, 60);
-      setBubble(charId, text, "");
-      if (btn) positionBubbleNear(btn);
+      setBubble(replySpeaker, text, "");
+      if (anchorBtn) positionBubbleNear(anchorBtn);
       const cd = isRapid ? 4200 : 1200;
       cooldownUntil = Date.now() + Math.min(5000, Math.max(600, cd));
     } catch {
@@ -479,7 +517,10 @@ function setupGreeter() {
     });
 
   const maybeSetGlobalDecoDragging = (() => {
-    const dragSrc = "./assets/images/deco-drag.png";
+    const dragSrcs = [
+      "./assets/images/deco-drag.png",
+      "./assets/images/deco-drag.jpg"
+    ];
 
     const setCssUrl = (el, urlValue) => {
       if (!el) return;
@@ -495,7 +536,10 @@ function setupGreeter() {
         probe.src = src;
       });
 
+    let intentActive = false;
+
     return async (isDragging) => {
+      intentActive = isDragging;
       const deco = qs(".global-deco-image");
       if (!deco) return;
 
@@ -506,9 +550,16 @@ function setupGreeter() {
           const computed = getComputedStyle(deco).getPropertyValue("--global-deco-image");
           deco.dataset.decoPrev = (computed || "").trim();
         }
-        const ok = await canLoad(dragSrc);
-        if (!ok) return;
-        setCssUrl(deco, `url("${dragSrc}")`);
+        let loadedSrc = null;
+        for (const src of dragSrcs) {
+          if (await canLoad(src)) {
+            loadedSrc = src;
+            break;
+          }
+        }
+        if (!intentActive) return;
+        if (!loadedSrc) return;
+        setCssUrl(deco, `url("${loadedSrc}")`);
       } else {
         const prev = deco.dataset.decoPrev;
         if (prev == null) return;
@@ -521,6 +572,7 @@ function setupGreeter() {
 
   const setCharDraggingVisual = async (btn, isDragging) => {
     if (!btn) return;
+    btn.dataset.isDraggingVis = isDragging ? "true" : "false";
     btn.classList.toggle("is-dragging", !!isDragging);
     const img = qs(".greeter-float-img", btn);
     const charId = getCharId(btn);
@@ -529,6 +581,9 @@ function setupGreeter() {
     const idleSrc = `./assets/images/${charId}.png`;
     if (isDragging) {
       await trySwapImageSrc(img, dragSrc);
+      if (btn.dataset.isDraggingVis === "false") {
+        img.src = idleSrc;
+      }
     } else {
       // always restore to idle (even if dragSrc never existed)
       img.src = idleSrc;
@@ -652,8 +707,7 @@ function setupGreeter() {
     return true;
   };
 
-  // Initialize drag positions to left/top once.
-  buttons.forEach((btn) => normalizeToLeftTop(btn));
+  // Initialize drag positions to left/top only upon interaction to support responsive and delayed layout.
 
   const DRAG_THRESHOLD = 8;
   const SOFT_PAD = 24; // allow slight overflow while dragging
@@ -753,6 +807,13 @@ function setupGreeter() {
     const charId = getCharId(btn);
     if (charId !== "KT" && charId !== "YT") return;
 
+    if (dragState.active && dragState.pointerId !== e.pointerId) return;
+
+    if (!btn.dataset.renderedToAbsolute) {
+      normalizeToLeftTop(btn);
+      btn.dataset.renderedToAbsolute = "true";
+    }
+
     dragState.active = true;
     dragState.moved = false;
     dragState.pointerId = e.pointerId;
@@ -785,6 +846,7 @@ function setupGreeter() {
       if (dist < DRAG_THRESHOLD) return;
       dragState.moved = true;
       suppressClickUntil = Date.now() + 600;
+      cooldownUntil = 0; // Prevent mute drops: clear cooldown since we hid the bubble
       document.body.classList.add("is-greeter-dragging");
       if (bubble) bubble.hidden = true;
       await setCharDraggingVisual(btn, true);
@@ -827,14 +889,14 @@ function setupGreeter() {
 
     if (!btn) return;
 
+    document.body.classList.remove("is-greeter-dragging");
+    await setCharDraggingVisual(btn, false);
+    await maybeSetGlobalDecoDragging(false);
+
     if (moved) {
       // no snap-back; keep the dropped position
       await handleDropTriggers(btn, charId);
     }
-
-    document.body.classList.remove("is-greeter-dragging");
-    await setCharDraggingVisual(btn, false);
-    await maybeSetGlobalDecoDragging(false);
   };
 
   buttons.forEach((btn) => {
@@ -843,6 +905,19 @@ function setupGreeter() {
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerup", endDrag);
   window.addEventListener("pointercancel", endDrag);
+
+  document.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".greeter-float-btn") || e.target.closest(".greeter-float-bubble")) {
+      return;
+    }
+    if (bubble) bubble.hidden = true;
+    dragState.active = false;
+    dragState.moved = false;
+    dragState.btn = null;
+    document.body.classList.remove("is-greeter-dragging");
+    buttons.forEach((b) => setCharDraggingVisual(b, false));
+    maybeSetGlobalDecoDragging(false);
+  });
 
   // Auto speak on section enter (once per section per page load)
   const sectionMap = {
