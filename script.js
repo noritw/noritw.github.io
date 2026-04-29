@@ -243,7 +243,8 @@ function setupGreeter() {
       if (dx < 0) bubble.classList.add("tail-left");
       else bubble.classList.add("tail-right");
     } else {
-      const tailX = Math.max(edgePad, Math.min(ix, bw - edgePad));
+      // 上下邊箭頭時，X 位置優先貼近頭部水平位置
+      const tailX = Math.max(edgePad, Math.min(relX, bw - edgePad));
       bubble.style.setProperty("--tail-x", `${Math.round(tailX)}px`);
       if (dy < 0) bubble.classList.add("tail-top");
       else bubble.classList.add("tail-bottom");
