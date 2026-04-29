@@ -28,22 +28,7 @@
 html {
   scroll-behavior: smooth;
   overflow-x: clip;
-  background: radial-gradient(
-      1200px 700px at 18% 10%,
-      rgba(96, 185, 255, 0.28),
-      transparent 55%
-    ),
-    radial-gradient(
-      900px 620px at 78% 22%,
-      rgba(54, 214, 198, 0.22),
-      transparent 60%
-    ),
-    radial-gradient(
-      1100px 740px at 35% 95%,
-      rgba(123, 220, 87, 0.16),
-      transparent 55%
-    ),
-    linear-gradient(180deg, var(--bg), var(--bg2));
+  background: var(--bg);
 }
 
 body {
