@@ -948,6 +948,7 @@ a:hover {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   align-items: center;
+  position: relative; /* anchor greeter dropzone (dyh/aw) */
   border-radius: calc(var(--radius) + 6px);
   border: 1px solid rgba(10, 18, 28, 0.12);
   background: linear-gradient(
