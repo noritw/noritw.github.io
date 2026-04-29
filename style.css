@@ -251,7 +251,7 @@ a:hover {
 .global-deco-image {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
   background-image: var(--global-deco-image);
   background-repeat: no-repeat;
@@ -272,6 +272,126 @@ a:hover {
     rgba(180, 180, 180, 1.0) 100%
   );
   mix-blend-mode: multiply;
+}
+
+.global-deco-bubbles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.global-deco-bubbles .bubble {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 70%);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  animation-name: bubble-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.global-deco-bubbles .b1 {
+  width: 220px;
+  height: 220px;
+  left: 6%;
+  bottom: -18%;
+  animation-duration: 26s;
+  animation-delay: -4s;
+}
+
+.global-deco-bubbles .b2 {
+  width: 180px;
+  height: 180px;
+  left: 22%;
+  top: -16%;
+  animation-duration: 30s;
+  animation-delay: -11s;
+}
+
+.global-deco-bubbles .b3 {
+  width: 260px;
+  height: 260px;
+  right: -8%;
+  top: 8%;
+  animation-duration: 34s;
+  animation-delay: -7s;
+}
+
+.global-deco-bubbles .b4 {
+  width: 160px;
+  height: 160px;
+  right: 18%;
+  bottom: -14%;
+  animation-duration: 28s;
+  animation-delay: -17s;
+}
+
+.global-deco-bubbles .b5 {
+  width: 200px;
+  height: 200px;
+  left: -10%;
+  top: 32%;
+  animation-duration: 32s;
+  animation-delay: -22s;
+}
+
+.global-deco-bubbles .b6 {
+  width: 140px;
+  height: 140px;
+  left: 48%;
+  top: -10%;
+  animation-duration: 24s;
+  animation-delay: -15s;
+}
+
+.global-deco-bubbles .b7 {
+  width: 190px;
+  height: 190px;
+  right: 4%;
+  top: 42%;
+  animation-duration: 29s;
+  animation-delay: -3s;
+}
+
+.global-deco-bubbles .b8 {
+  width: 150px;
+  height: 150px;
+  left: 38%;
+  bottom: -12%;
+  animation-duration: 27s;
+  animation-delay: -19s;
+}
+
+@keyframes bubble-float {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(0, -26%, 0) scale(1.06);
+    opacity: 0.75;
+  }
+  88% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate3d(0, -40%, 0) scale(1.02);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-deco-bubbles .bubble {
+    animation: none;
+    opacity: 0.12;
+  }
 }
 
 .section-title {
