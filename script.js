@@ -481,7 +481,7 @@ function setupGreeter() {
   const maybeSetHeroBgDragging = (() => {
     const heroImg = qs("#heroBgImg");
     let prev = null;
-    const dragSrc = "./assets/images/hero-bg-drag.jpg";
+    const dragSrc = "./assets/images/hero-bg-drag.png";
     return async (isDragging) => {
       if (!heroImg) return;
       if (isDragging) {
