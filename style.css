@@ -26,6 +26,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -51,6 +52,7 @@ body {
     "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
   line-height: 1.55;
   letter-spacing: 0.2px;
+  overflow-x: clip;
 }
 
 img {
@@ -181,7 +183,7 @@ a:hover {
 
 .section.has-color-blocks::before {
   top: clamp(16px, 4vw, 34px);
-  left: clamp(-90px, -5vw, -48px);
+  left: clamp(-24px, -2vw, -8px);
   width: clamp(220px, 34vw, 480px);
   height: clamp(120px, 20vw, 240px);
   border-radius: 999px;
@@ -194,7 +196,7 @@ a:hover {
 }
 
 .section.has-color-blocks::after {
-  right: clamp(-86px, -4vw, -44px);
+  right: clamp(-24px, -2vw, -8px);
   bottom: clamp(8px, 2vw, 24px);
   width: clamp(180px, 26vw, 360px);
   height: clamp(120px, 18vw, 220px);
@@ -242,6 +244,33 @@ a:hover {
   --block-b2: rgba(255, 255, 255, 0.05);
   --block-tilt-a: -11deg;
   --block-tilt-b: 9deg;
+}
+
+/* Optional custom hand-drawn decoration per section.
+   Add data-deco on section; JS injects .section-deco-image. */
+.global-deco-image {
+  position: fixed;
+  right: clamp(10px, 2vw, 24px);
+  bottom: clamp(10px, 2vw, 24px);
+  z-index: 1;
+  pointer-events: none;
+  width: min(30vw, 300px);
+  aspect-ratio: 1 / 1;
+  background-image: var(--global-deco-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+}
+
+@media (max-width: 860px) {
+  .global-deco-image {
+    width: min(42vw, 220px);
+    opacity: 0.14;
+    right: 6px;
+    bottom: 108px;
+  }
 }
 
 .section-title {

@@ -116,6 +116,45 @@ function setupSectionColorBlocks() {
   });
 }
 
+function setupGlobalDecoImage() {
+  const candidates = [
+    "./assets/images/deco-1.png",
+    "./assets/images/deco-2.png",
+    "./assets/images/deco-3.png",
+  ];
+  if (!candidates.length) return;
+
+  const unique = Array.from(new Set(candidates));
+  const storageKey = "global-deco-last";
+  const last = sessionStorage.getItem(storageKey);
+  const pool = unique.filter((src) => src !== last);
+  const shuffled = (pool.length ? pool : unique)
+    .map((v) => ({ v, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map((x) => x.v);
+
+  const tryLoad = (srcIdx) =>
+    new Promise((resolve) => {
+      if (srcIdx >= shuffled.length) return resolve(null);
+      const src = shuffled[srcIdx];
+      const probe = new Image();
+      probe.onload = () => resolve(src);
+      probe.onerror = () => resolve(tryLoad(srcIdx + 1));
+      probe.src = src;
+    });
+
+  tryLoad(0).then((src) => {
+    if (!src) return;
+    const exists = qs(".global-deco-image");
+    if (exists) exists.remove();
+    const deco = document.createElement("div");
+    deco.className = "global-deco-image";
+    deco.style.setProperty("--global-deco-image", `url("${src}")`);
+    document.body.appendChild(deco);
+    sessionStorage.setItem(storageKey, src);
+  });
+}
+
 async function loadGreeterLines() {
   try {
     const res = await fetch("./characters/greeter-lines.json", { cache: "no-cache" });
@@ -424,6 +463,7 @@ setupSmoothScrollOffset();
 setupHeroStagger();
 setupHeroBgRotation();
 setupSectionColorBlocks();
+setupGlobalDecoImage();
 setupReveal();
 setupGreeter();
 
