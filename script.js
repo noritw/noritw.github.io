@@ -480,11 +480,7 @@ function setupGreeter() {
 
   const maybeSetGlobalDecoDragging = (() => {
     let prevCssUrl = null;
-    const candidates = [
-      "./assets/images/deco-drag.png",
-      "./assets/images/deco-drag-2.png",
-      "./assets/images/deco-drag-3.png",
-    ];
+    const dragSrc = "./assets/images/deco-drag.png";
 
     const getCssUrl = (el) => {
       if (!el) return null;
@@ -498,19 +494,13 @@ function setupGreeter() {
       else el.style.setProperty("--global-deco-image", urlValue);
     };
 
-    const tryLoadFirst = async (list) => {
-      for (const src of list) {
-        // probe only; do not touch DOM on failure
-        const ok = await new Promise((resolve) => {
-          const probe = new Image();
-          probe.onload = () => resolve(true);
-          probe.onerror = () => resolve(false);
-          probe.src = src;
-        });
-        if (ok) return src;
-      }
-      return null;
-    };
+    const canLoad = async (src) =>
+      await new Promise((resolve) => {
+        const probe = new Image();
+        probe.onload = () => resolve(true);
+        probe.onerror = () => resolve(false);
+        probe.src = src;
+      });
 
     return async (isDragging) => {
       const deco = qs(".global-deco-image");
@@ -518,9 +508,9 @@ function setupGreeter() {
 
       if (isDragging) {
         if (!prevCssUrl) prevCssUrl = getCssUrl(deco);
-        const pick = await tryLoadFirst(candidates);
-        if (!pick) return;
-        setCssUrl(deco, `url("${pick}")`);
+        const ok = await canLoad(dragSrc);
+        if (!ok) return;
+        setCssUrl(deco, `url("${dragSrc}")`);
       } else {
         if (!prevCssUrl) return;
         setCssUrl(deco, prevCssUrl);
