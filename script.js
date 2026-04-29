@@ -479,14 +479,7 @@ function setupGreeter() {
     });
 
   const maybeSetGlobalDecoDragging = (() => {
-    let prevCssUrl = null;
     const dragSrc = "./assets/images/deco-drag.png";
-
-    const getCssUrl = (el) => {
-      if (!el) return null;
-      const v = el.style.getPropertyValue("--global-deco-image");
-      return v && v.trim() ? v.trim() : null;
-    };
 
     const setCssUrl = (el, urlValue) => {
       if (!el) return;
@@ -507,14 +500,21 @@ function setupGreeter() {
       if (!deco) return;
 
       if (isDragging) {
-        if (!prevCssUrl) prevCssUrl = getCssUrl(deco);
+        // Use computed style + element dataset to make restore robust
+        // even if the element gets recreated or inline styles change.
+        if (!deco.dataset.decoPrev) {
+          const computed = getComputedStyle(deco).getPropertyValue("--global-deco-image");
+          deco.dataset.decoPrev = (computed || "").trim();
+        }
         const ok = await canLoad(dragSrc);
         if (!ok) return;
         setCssUrl(deco, `url("${dragSrc}")`);
       } else {
-        if (!prevCssUrl) return;
-        setCssUrl(deco, prevCssUrl);
-        prevCssUrl = null;
+        const prev = deco.dataset.decoPrev;
+        if (prev == null) return;
+        if (!String(prev).trim()) setCssUrl(deco, null);
+        else setCssUrl(deco, String(prev).trim());
+        delete deco.dataset.decoPrev;
       }
     };
   })();
