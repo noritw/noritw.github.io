@@ -15,7 +15,7 @@
   --accent3: #7bdc57; /* green */
   /* 少量重點（橘） */
   --hot: #ff8a3d;
-  --deco-opacity: 0.5;
+  --deco-opacity: 1.0;
 
   --radius: 18px;
   --max: 1120px;
