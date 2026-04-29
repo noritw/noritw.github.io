@@ -156,12 +156,37 @@ function setupGlobalDecoImage() {
 }
 
 async function loadGreeterLines() {
+  const FALLBACK = {
+    KT: ["……", "收到。晚點我會處理。", "別跟我說「應該」。給我重現步驟。"],
+    YT: ["……", "你來了就好，先坐。", "存檔、備份、再存檔。"],
+    meta: ["……", "（沉默）……作者在忙。", "今天先到這裡。作者要回去做事。"],
+    dropzones: {
+      works: {
+        KT: ["作品在這。想看就去點。"],
+        YT: ["這裡是作品區～喜歡就去看看。"],
+      },
+      contact: {
+        KT: ["要合作就寄信。需求寫清楚。"],
+        YT: ["想合作就寄信～作者會回的。"],
+      },
+    },
+    collisions: {
+      KT_on_YT: ["別擋路。"],
+      YT_on_KT: ["欸你很兇耶。"],
+    },
+    dialogues: {
+      YT_on_KT: [
+        { speaker: "YT", text: "欸嘿", delayMs: 0 },
+        { speaker: "KT", text: "……（臉紅）", delayMs: 520 },
+      ],
+    },
+  };
   try {
     const res = await fetch("./characters/greeter-lines.json", { cache: "no-cache" });
-    if (!res.ok) return null;
+    if (!res.ok) return FALLBACK;
     return await res.json();
   } catch {
-    return null;
+    return FALLBACK;
   }
 }
 
@@ -232,6 +257,8 @@ function setupGreeter() {
 
   let lines = null;
   let cooldownUntil = 0;
+  let suppressClickUntil = 0;
+  let dialoguePlaying = false;
   const autoSpoken = new Set();
   const recentClicks = {
     KT: [],
@@ -322,6 +349,9 @@ function setupGreeter() {
     buttons.forEach((b) => (b.disabled = disabled));
   };
 
+  const getCharId = (btn) => (btn && btn.getAttribute("data-greeter")) || "";
+  const getBtnByChar = (charId) => buttons.find((b) => getCharId(b) === charId) || null;
+
   const localReply = (charId) => {
     const pool = lines && lines[charId];
     const meta = lines && lines.meta;
@@ -368,6 +398,8 @@ function setupGreeter() {
   const onClick = async (charId, btn) => {
     const now = Date.now();
     if (now < cooldownUntil) return;
+    if (now < suppressClickUntil) return;
+    if (dialoguePlaying) return;
 
     setDisabled(true);
     setBubble(charId, "……", "（思考中）");
@@ -400,8 +432,357 @@ function setupGreeter() {
   };
 
   buttons.forEach((btn) => {
-    btn.addEventListener("click", () => onClick(btn.getAttribute("data-greeter"), btn));
+    btn.addEventListener("click", (e) => {
+      if (Date.now() < suppressClickUntil) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      onClick(getCharId(btn), btn);
+    });
   });
+
+  // --- Drag interactions (pointer-based; mouse + touch) ---
+  // Convert initial CSS positions (incl. right/bottom) into left/top so we can drag consistently.
+  const normalizeToLeftTop = (btn) => {
+    const rect = btn.getBoundingClientRect();
+    btn.style.left = `${Math.round(rect.left)}px`;
+    btn.style.top = `${Math.round(rect.top)}px`;
+    btn.style.right = "auto";
+    btn.style.bottom = "auto";
+  };
+
+  const safeNumber = (v, fallback = 0) => (Number.isFinite(v) ? v : fallback);
+
+  const getInlineLeftTop = (btn) => {
+    const left = safeNumber(parseFloat(btn.style.left), btn.getBoundingClientRect().left);
+    const top = safeNumber(parseFloat(btn.style.top), btn.getBoundingClientRect().top);
+    return { left, top };
+  };
+
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
+
+  const rectOverlapArea = (a, b) => {
+    const x1 = Math.max(a.left, b.left);
+    const y1 = Math.max(a.top, b.top);
+    const x2 = Math.min(a.right, b.right);
+    const y2 = Math.min(a.bottom, b.bottom);
+    const w = Math.max(0, x2 - x1);
+    const h = Math.max(0, y2 - y1);
+    return w * h;
+  };
+
+  const trySwapImageSrc = (imgEl, nextSrc) =>
+    new Promise((resolve) => {
+      if (!imgEl || !nextSrc) return resolve(false);
+      const probe = new Image();
+      probe.onload = () => {
+        imgEl.src = nextSrc;
+        resolve(true);
+      };
+      probe.onerror = () => resolve(false);
+      probe.src = nextSrc;
+    });
+
+  const maybeSetHeroBgDragging = (() => {
+    const heroImg = qs("#heroBgImg");
+    let prev = null;
+    const dragSrc = "./assets/images/hero-bg-drag.jpg";
+    return async (isDragging) => {
+      if (!heroImg) return;
+      if (isDragging) {
+        if (!prev) prev = heroImg.src;
+        const ok = await trySwapImageSrc(heroImg, dragSrc);
+        if (!ok) {
+          // no-op if drag image is not available
+        }
+      } else {
+        if (prev) {
+          heroImg.src = prev;
+          prev = null;
+        }
+      }
+    };
+  })();
+
+  const setCharDraggingVisual = async (btn, isDragging) => {
+    if (!btn) return;
+    btn.classList.toggle("is-dragging", !!isDragging);
+    const img = qs(".greeter-float-img", btn);
+    const charId = getCharId(btn);
+    if (!img || (charId !== "KT" && charId !== "YT")) return;
+    const dragSrc = `./assets/images/${charId}-drag.png`;
+    const idleSrc = `./assets/images/${charId}.png`;
+    if (isDragging) {
+      await trySwapImageSrc(img, dragSrc);
+    } else {
+      // always restore to idle (even if dragSrc never existed)
+      img.src = idleSrc;
+    }
+  };
+
+  const getDropzones = () => qsa("[data-dropzone]");
+
+  const dropzoneReply = (zoneId, speaker) => {
+    const dz = lines && lines.dropzones && lines.dropzones[zoneId];
+    if (!dz) return null;
+    const pool = (speaker && dz[speaker]) || [];
+    const t = pickRandom(pool);
+    if (!t) return null;
+    return { speaker, text: t, source: `dropzone:${zoneId}` };
+  };
+
+  const collisionDialogue = (dragChar, targetChar) => {
+    const key = `${dragChar}_on_${targetChar}`;
+    const seq = lines && lines.dialogues && lines.dialogues[key];
+    if (!Array.isArray(seq) || seq.length === 0) return null;
+    const cleaned = seq
+      .map((s) => ({
+        speaker: (s && String(s.speaker || "")).toUpperCase(),
+        text: typeof s?.text === "string" ? s.text : "",
+        delayMs: Number.isFinite(s?.delayMs) ? s.delayMs : 0,
+      }))
+      .filter((s) => (s.speaker === "KT" || s.speaker === "YT") && s.text.trim());
+    return cleaned.length ? { key, steps: cleaned } : null;
+  };
+
+  const collisionReply = (dragChar, targetChar) => {
+    const key = `${dragChar}_on_${targetChar}`;
+    const pool = lines && lines.collisions && lines.collisions[key];
+    const t = pickRandom(pool || []);
+    if (!t) return null;
+    return { speaker: dragChar, text: t, source: `collision:${key}` };
+  };
+
+  const sleep = (ms) =>
+    new Promise((resolve) => window.setTimeout(resolve, Math.max(0, ms | 0)));
+
+  const playDialogue = async (steps) => {
+    const now = Date.now();
+    if (now < cooldownUntil) return false;
+    if (dialoguePlaying) return false;
+    if (!Array.isArray(steps) || steps.length === 0) return false;
+    if (!lines) lines = await loadGreeterLines();
+
+    dialoguePlaying = true;
+    setDisabled(true);
+    suppressClickUntil = Date.now() + 1200;
+
+    try {
+      for (const step of steps) {
+        const speaker = step.speaker;
+        const text = step.text;
+        const delayMs = Number.isFinite(step.delayMs) ? step.delayMs : 0;
+        if (delayMs > 0) await sleep(delayMs);
+
+        const anchorBtn = getBtnByChar(speaker);
+        setBubble(speaker, clampText(text, 60), "");
+        if (anchorBtn) positionBubbleNear(anchorBtn);
+      }
+
+      cooldownUntil = Date.now() + 1600;
+      return true;
+    } finally {
+      setTimeout(() => setDisabled(false), Math.max(0, cooldownUntil - Date.now()));
+      dialoguePlaying = false;
+    }
+  };
+
+  const triggerSay = async (speaker, text, anchorBtn) => {
+    const now = Date.now();
+    if (now < cooldownUntil) return false;
+    if (dialoguePlaying) return false;
+    if (!lines) lines = await loadGreeterLines();
+    const flavored = maybeAddTimeFlavor(text, speaker, lines && lines.timeFlavor);
+    setBubble(speaker, clampText(flavored, 60), "");
+    if (anchorBtn) positionBubbleNear(anchorBtn);
+    cooldownUntil = Date.now() + 1400;
+    return true;
+  };
+
+  // Initialize drag positions to left/top once.
+  buttons.forEach((btn) => normalizeToLeftTop(btn));
+
+  const DRAG_THRESHOLD = 8;
+  const SOFT_PAD = 24; // allow slight overflow while dragging
+  const SNAP_MS = 140;
+
+  const dragState = {
+    active: false,
+    moved: false,
+    pointerId: null,
+    btn: null,
+    charId: "",
+    startX: 0,
+    startY: 0,
+    originLeft: 0,
+    originTop: 0,
+  };
+
+  const setBtnLeftTop = (btn, left, top) => {
+    btn.style.left = `${Math.round(left)}px`;
+    btn.style.top = `${Math.round(top)}px`;
+  };
+
+  const snapBtnIntoViewport = (btn) => {
+    const rect = btn.getBoundingClientRect();
+    const { left, top } = getInlineLeftTop(btn);
+    const w = rect.width || 1;
+    const h = rect.height || 1;
+    const minL = 0;
+    const minT = 0;
+    const maxL = Math.max(0, window.innerWidth - w);
+    const maxT = Math.max(0, window.innerHeight - h);
+    const clampedL = clamp(left, minL, maxL);
+    const clampedT = clamp(top, minT, maxT);
+    btn.classList.add("is-snapping");
+    setBtnLeftTop(btn, clampedL, clampedT);
+    window.setTimeout(() => btn.classList.remove("is-snapping"), SNAP_MS + 40);
+  };
+
+  const handleDropTriggers = async (dragBtn, dragChar) => {
+    if (!dragBtn || (dragChar !== "KT" && dragChar !== "YT")) return;
+    if (!lines) lines = await loadGreeterLines();
+    if (dialoguePlaying) return;
+
+    const dragRect = dragBtn.getBoundingClientRect();
+
+    // 1) Collision with the other greeter
+    const otherBtn = buttons.find((b) => b !== dragBtn);
+    if (otherBtn) {
+      const otherChar = getCharId(otherBtn);
+      const otherRect = otherBtn.getBoundingClientRect();
+      const area = rectOverlapArea(dragRect, otherRect);
+      if (area > 0) {
+        const d = collisionDialogue(dragChar, otherChar);
+        if (d) {
+          const ok = await playDialogue(d.steps);
+          if (ok) return;
+        }
+        const r = collisionReply(dragChar, otherChar);
+        if (r) {
+          await triggerSay(r.speaker, r.text, dragBtn);
+          return;
+        }
+      }
+    }
+
+    // 2) Dropzones
+    const zones = getDropzones();
+    let best = null;
+    for (const z of zones) {
+      const zoneId = z.getAttribute("data-dropzone");
+      if (!zoneId) continue;
+      const zr = z.getBoundingClientRect();
+      const area = rectOverlapArea(dragRect, zr);
+      if (area <= 0) continue;
+      if (!best || area > best.area) best = { zoneId, area };
+    }
+    if (best) {
+      const r = dropzoneReply(best.zoneId, dragChar);
+      if (r) {
+        await triggerSay(r.speaker, r.text, dragBtn);
+      }
+    }
+  };
+
+  const onPointerDown = async (e, btn) => {
+    if (!btn || btn.disabled) return;
+    if (e.button != null && e.button !== 0) return; // left click only
+    if (dialoguePlaying) return;
+    const charId = getCharId(btn);
+    if (charId !== "KT" && charId !== "YT") return;
+
+    dragState.active = true;
+    dragState.moved = false;
+    dragState.pointerId = e.pointerId;
+    dragState.btn = btn;
+    dragState.charId = charId;
+    dragState.startX = e.clientX;
+    dragState.startY = e.clientY;
+    const { left, top } = getInlineLeftTop(btn);
+    dragState.originLeft = left;
+    dragState.originTop = top;
+
+    try {
+      btn.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+  };
+
+  const onPointerMove = async (e) => {
+    if (!dragState.active) return;
+    if (dragState.pointerId !== e.pointerId) return;
+    const btn = dragState.btn;
+    if (!btn) return;
+
+    const dx = e.clientX - dragState.startX;
+    const dy = e.clientY - dragState.startY;
+    const dist = Math.hypot(dx, dy);
+
+    if (!dragState.moved) {
+      if (dist < DRAG_THRESHOLD) return;
+      dragState.moved = true;
+      suppressClickUntil = Date.now() + 600;
+      document.body.classList.add("is-greeter-dragging");
+      await setCharDraggingVisual(btn, true);
+      await maybeSetHeroBgDragging(true);
+    }
+
+    const rect = btn.getBoundingClientRect();
+    const w = rect.width || 1;
+    const h = rect.height || 1;
+    const minL = -SOFT_PAD;
+    const minT = -SOFT_PAD;
+    const maxL = window.innerWidth - w + SOFT_PAD;
+    const maxT = window.innerHeight - h + SOFT_PAD;
+
+    const nextL = clamp(dragState.originLeft + dx, minL, maxL);
+    const nextT = clamp(dragState.originTop + dy, minT, maxT);
+    setBtnLeftTop(btn, nextL, nextT);
+  };
+
+  const endDrag = async (e) => {
+    if (!dragState.active) return;
+    if (dragState.pointerId !== e.pointerId) return;
+    const btn = dragState.btn;
+    const charId = dragState.charId;
+    const moved = dragState.moved;
+
+    dragState.active = false;
+    dragState.moved = false;
+    dragState.pointerId = null;
+    dragState.btn = null;
+    dragState.charId = "";
+
+    if (btn) {
+      try {
+        btn.releasePointerCapture(e.pointerId);
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!btn) return;
+
+    if (moved) {
+      // snap into view, then trigger drop logic
+      snapBtnIntoViewport(btn);
+      await handleDropTriggers(btn, charId);
+    }
+
+    document.body.classList.remove("is-greeter-dragging");
+    await setCharDraggingVisual(btn, false);
+    await maybeSetHeroBgDragging(false);
+  };
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("pointerdown", (e) => onPointerDown(e, btn));
+  });
+  window.addEventListener("pointermove", onPointerMove, { passive: true });
+  window.addEventListener("pointerup", endDrag);
+  window.addEventListener("pointercancel", endDrag);
 
   // Auto speak on section enter (once per section per page load)
   const sectionMap = {
