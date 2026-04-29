@@ -241,6 +241,64 @@ a:hover {
   border: 1px solid rgba(10, 18, 28, 0.12);
   background: rgba(255, 255, 255, 0.92);
   box-shadow: var(--shadow);
+  --bubble-border: rgba(10, 18, 28, 0.12);
+  --bubble-bg: rgba(255, 255, 255, 0.92);
+}
+
+/* 氣泡箭頭：依講話者切換左右 */
+.greeter-float-bubble::before,
+.greeter-float-bubble::after {
+  content: "";
+  position: absolute;
+  top: 24px;
+  width: 0;
+  height: 0;
+}
+
+/* 外框三角形（邊線） */
+.greeter-float-bubble::before {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+/* 內層三角形（填色） */
+.greeter-float-bubble::after {
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+}
+
+.greeter-float-bubble.is-left::before {
+  left: -11px;
+  border-right: 11px solid var(--bubble-border);
+}
+
+.greeter-float-bubble.is-left::after {
+  left: -9px;
+  border-right: 10px solid var(--bubble-bg);
+}
+
+.greeter-float-bubble.is-right::before {
+  right: -11px;
+  border-left: 11px solid var(--bubble-border);
+}
+
+.greeter-float-bubble.is-right::after {
+  right: -9px;
+  border-left: 10px solid var(--bubble-bg);
+}
+
+/* KT：左側、冷色框線 */
+.greeter-float-bubble.is-left {
+  --bubble-border: rgba(70, 140, 210, 0.58);
+  --bubble-bg: rgba(250, 255, 255, 0.95);
+  border-color: var(--bubble-border);
+}
+
+/* YT：右側、暖色框線 */
+.greeter-float-bubble.is-right {
+  --bubble-border: rgba(235, 138, 78, 0.58);
+  --bubble-bg: rgba(255, 252, 247, 0.95);
+  border-color: var(--bubble-border);
 }
 
 @media (max-width: 520px) {

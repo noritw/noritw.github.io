@@ -211,6 +211,11 @@ function setupGreeter() {
     if (speakerEl) speakerEl.textContent = speaker || "—";
     if (textEl) textEl.textContent = text || "";
     if (subEl) subEl.textContent = sub || "";
+    if (bubble) {
+      bubble.classList.remove("is-left", "is-right");
+      if (speaker === "KT") bubble.classList.add("is-left");
+      else if (speaker === "YT") bubble.classList.add("is-right");
+    }
     if (bubble) bubble.hidden = false;
   };
 
