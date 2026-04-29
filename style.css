@@ -454,14 +454,18 @@ a:hover {
 
 .greeter-float-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
 }
 
 .greeter-float-btn.is-dragging {
   z-index: 999;
   /* ensure dragged one stays in front */
   cursor: grabbing;
-  filter: drop-shadow(0 18px 28px rgba(10, 20, 30, 0.26));
+  filter: drop-shadow(0 10px 16px rgba(10, 20, 30, 0.18));
+}
+
+/* 拖曳進行中，非拖曳小人輕微降低透明度避免視覺黏在一起 */
+.is-greeter-dragging .greeter-float-btn:not(.is-dragging) {
+  opacity: 0.85;
 }
 
 .greeter-float-btn.is-snapping {
