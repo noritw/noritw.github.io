@@ -211,29 +211,38 @@ function setupGreeter() {
     const headY = rect.top + rect.height * 0.28;
     const relX = headX - left;
     const relY = headY - top;
-    const dx = relX - bw / 2;
-    const dy = relY - bh / 2;
+    const cx = bw / 2;
+    const cy = bh / 2;
+    const dx = relX - cx;
+    const dy = relY - cy;
     const edgePad = 18;
-    const halfW = Math.max(1, bw / 2);
-    const halfH = Math.max(1, bh / 2);
-    const nx = Math.abs(dx) / halfW;
-    const ny = Math.abs(dy) / halfH;
 
     bubble.classList.remove("tail-left", "tail-right", "tail-top", "tail-bottom");
     // 先重置，避免前一次方向殘留造成偶發錯位
     bubble.style.removeProperty("--tail-x");
     bubble.style.removeProperty("--tail-y");
 
-    // 用正規化距離判斷最接近哪個邊，兼顧手機/桌機不同比例
-    if (nx >= ny) {
-      // 人物主要在氣泡左右側：箭頭放在左右邊
-      const tailY = Math.max(edgePad, Math.min(relY, bh - edgePad));
+    // 從氣泡中心朝人物頭部做射線，命中哪條邊就把箭頭放在哪條邊
+    const tx =
+      dx === 0
+        ? Number.POSITIVE_INFINITY
+        : ((dx > 0 ? bw : 0) - cx) / dx;
+    const ty =
+      dy === 0
+        ? Number.POSITIVE_INFINITY
+        : ((dy > 0 ? bh : 0) - cy) / dy;
+    const hitVertical = tx > 0 && tx <= ty;
+    const t = hitVertical ? tx : ty;
+    const ix = cx + dx * t;
+    const iy = cy + dy * t;
+
+    if (hitVertical) {
+      const tailY = Math.max(edgePad, Math.min(iy, bh - edgePad));
       bubble.style.setProperty("--tail-y", `${Math.round(tailY)}px`);
       if (dx < 0) bubble.classList.add("tail-left");
       else bubble.classList.add("tail-right");
     } else {
-      // 人物主要在氣泡上下側：箭頭放在上下邊
-      const tailX = Math.max(edgePad, Math.min(relX, bw - edgePad));
+      const tailX = Math.max(edgePad, Math.min(ix, bw - edgePad));
       bubble.style.setProperty("--tail-x", `${Math.round(tailX)}px`);
       if (dy < 0) bubble.classList.add("tail-top");
       else bubble.classList.add("tail-bottom");
