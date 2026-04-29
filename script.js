@@ -532,18 +532,38 @@ function setupGreeter() {
     return { speaker, text: t, source: `dropzone:${zoneId}` };
   };
 
-  const collisionDialogue = (dragChar, targetChar) => {
-    const key = `${dragChar}_on_${targetChar}`;
-    const seq = lines && lines.dialogues && lines.dialogues[key];
-    if (!Array.isArray(seq) || seq.length === 0) return null;
-    const cleaned = seq
+  const normalizeDialogueSteps = (seq) => {
+    if (!Array.isArray(seq) || seq.length === 0) return [];
+    return seq
       .map((s) => ({
         speaker: (s && String(s.speaker || "")).toUpperCase(),
         text: typeof s?.text === "string" ? s.text : "",
         delayMs: Number.isFinite(s?.delayMs) ? s.delayMs : 0,
       }))
       .filter((s) => (s.speaker === "KT" || s.speaker === "YT") && s.text.trim());
-    return cleaned.length ? { key, steps: cleaned } : null;
+  };
+
+  const collisionDialogue = (dragChar, targetChar) => {
+    const key = `${dragChar}_on_${targetChar}`;
+    const raw = lines && lines.dialogues && lines.dialogues[key];
+    if (!raw) return null;
+
+    // Supported formats:
+    // 1) dialogues[key] = Step[]
+    // 2) dialogues[key] = Step[][]  (variants)
+    // 3) dialogues[key] = { variants: Step[][] }
+    let picked = null;
+    if (Array.isArray(raw)) {
+      const looksLikeStep = raw.some((x) => x && typeof x === "object" && ("speaker" in x || "text" in x));
+      const looksLikeVariants = Array.isArray(raw[0]);
+      if (looksLikeVariants) picked = pickRandom(raw);
+      else if (looksLikeStep) picked = raw;
+    } else if (raw && typeof raw === "object" && Array.isArray(raw.variants)) {
+      picked = pickRandom(raw.variants);
+    }
+
+    const steps = normalizeDialogueSteps(picked);
+    return steps.length ? { key, steps } : null;
   };
 
   const collisionReply = (dragChar, targetChar) => {
