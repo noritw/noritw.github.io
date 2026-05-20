@@ -993,6 +993,10 @@ a:hover {
   opacity: 1;
 }
 
+#work-dest .work-media img {
+  object-fit: contain;
+}
+
 .work-media .placeholder {
   position: absolute;
   inset: 0;
