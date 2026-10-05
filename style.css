@@ -1137,6 +1137,17 @@ a:hover {
 }
 
 /* TALKS & TEACHING */
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
 .talks-cards {
   margin-top: 14px;
 }
