@@ -938,7 +938,8 @@ function setupGreeter() {
     dest: "#work-dest",
     dyh: "#work-dyh",
     aw: "#work-aw",
-    highlights: 'section[aria-label="活動與分享"]',
+    talks: "#talks",
+    community: "#community",
     about: "#about",
     contact: "#contact",
   };

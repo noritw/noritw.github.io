@@ -861,7 +861,8 @@ a:hover {
 }
 
 @media (max-width: 860px) {
-  .cards {
+  .cards,
+  .cards.two {
     grid-template-columns: 1fr;
   }
 
@@ -1046,10 +1047,159 @@ a:hover {
   background: rgba(255, 255, 255, 0.9);
 }
 
+/* 小型作品列（不做成大卡片） */
+.work-mini {
+  position: relative;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(10, 18, 28, 0.12);
+  background: rgba(255, 255, 255, 0.62);
+  padding: 14px 16px;
+}
+
+.work-more-title {
+  margin-top: 36px;
+}
+
+.work-more-title + .work-mini {
+  margin-top: 0;
+}
+
+.work-mini-thumb {
+  width: 120px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(10, 18, 28, 0.12);
+}
+
+.work-mini-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .work-mini {
+    grid-template-columns: 88px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .work-mini-thumb {
+    width: 88px;
+  }
+
+  .work-mini .links {
+    grid-column: 1 / -1;
+  }
+}
+
+.work-mini-text .chiprow {
+  margin-top: 6px;
+}
+
+.work-more-link {
+  margin: 14px 0 0;
+  text-align: right;
+  font-size: 14px;
+}
+
+.chip-mobile {
+  border-color: rgba(255, 138, 61, 0.45);
+  color: #b4521a;
+  background: rgba(255, 138, 61, 0.1);
+}
+
+.work-mini h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.work-mini p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.work-mini .links {
+  margin-top: 0;
+}
+
 @media (max-width: 860px) {
   .work {
     grid-template-columns: 1fr;
   }
+}
+
+/* TALKS & TEACHING */
+.talks-cards {
+  margin-top: 14px;
+}
+
+.talk-list,
+.plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+.talk-list li {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.talk-year {
+  font-weight: 700;
+  color: rgba(10, 18, 28, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.talk-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.talk-venue {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.talk-title {
+  font-weight: 600;
+}
+
+.talk-body a {
+  font-size: 13px;
+  justify-self: start;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.plain-list li {
+  position: relative;
+  padding-left: 14px;
+  color: rgba(10, 18, 28, 0.8);
+}
+
+.plain-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent2);
 }
 
 /* ABOUT */
