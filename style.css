@@ -1109,6 +1109,23 @@ a:hover {
   font-size: 14px;
 }
 
+.work-more-link .sep {
+  margin: 0 10px;
+  color: var(--muted);
+}
+
+@media (max-width: 860px) {
+  .work-more-link {
+    display: grid;
+    gap: 6px;
+    justify-items: end;
+  }
+
+  .work-more-link .sep {
+    display: none;
+  }
+}
+
 .chip-mobile {
   border-color: rgba(255, 138, 61, 0.45);
   color: #b4521a;
