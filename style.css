@@ -1213,6 +1213,16 @@ a:hover {
   text-underline-offset: 3px;
 }
 
+.invite-contact {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
 .plain-list li {
   position: relative;
   padding-left: 14px;
