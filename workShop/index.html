@@ -29,7 +29,8 @@
   * { box-sizing: border-box; }
   /* 避免中文最後只剩一個字掉到下一行 */
   p, li, h3 { text-wrap: pretty; }
-  h1, h2, .tagline, .lead, .game-hint { word-break: keep-all; text-wrap: balance; }
+  h1, h2, .tagline, .game-hint { word-break: keep-all; text-wrap: balance; }
+  .lead { text-wrap: pretty; }
   .nb { display: inline-block; }
   html { scroll-behavior: smooth; }
   body {
@@ -126,11 +127,15 @@
 
   /* Steam (intentionally small) */
   .steam {
-    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    display: flex; flex-direction: column; gap: 10px;
     font-size: .9rem; color: var(--ink-soft);
     border-top: 1px dashed var(--line); padding-top: 20px; margin-top: 48px;
   }
+  .steam p { margin: 0; }
+  .steam .game-title { font-weight: 700; color: var(--ink); }
+  .steam .stores { display: flex; gap: 8px 18px; flex-wrap: wrap; }
   .steam a { font-weight: 700; }
+  .steam .soon { color: var(--tbd); }
 
   footer { padding: 32px 0 48px; text-align: center; color: var(--ink-soft); font-size: .85rem; }
 </style>
@@ -174,7 +179,7 @@
   <div class="wrap">
     <div class="eyebrow">For You</div>
     <h2>適合誰參加？</h2>
-    <p class="lead">本工作坊<strong>限女性參加</strong>，希望打造一個輕鬆、可以放心發問的學習環境。</p>
+    <p class="lead">本工作坊<strong>限女性參加，講師皆為女性</strong>，希望打造一個輕鬆、可以放心發問的學習環境。</p>
     <div class="grid">
       <div class="card"><h3>想做遊戲，但不知道從哪開始</h3><p>零基礎也沒關係，從安裝軟體開始帶。</p></div>
       <div class="card"><h3>心裡有故事、有角色</h3><p>喜歡寫故事、畫圖、劇情向遊戲，想讓角色動起來。</p></div>
@@ -240,8 +245,12 @@
     </div>
 
     <div class="steam">
-      <span>喜歡遊戲裡的兩位角色嗎？他們的故事在《心動除錯 Debug Your Heart》。</span>
-      <a href="https://store.steampowered.com/app/4601900/Debug_Your_Heart/" target="_blank" rel="noopener">Steam 頁面 →</a>
+      <p>喜歡遊戲裡的兩位角色嗎？他們的故事在這：<br><span class="nb game-title">《心動除錯 Debug Your Heart》</span></p>
+      <div class="stores">
+        <a href="https://store.steampowered.com/app/4601900/Debug_Your_Heart/" target="_blank" rel="noopener">Steam 頁面</a>
+        <span class="soon">Google Play（準備中）</span>
+        <span class="soon">iOS（準備中）</span>
+      </div>
     </div>
   </div>
 </section>
