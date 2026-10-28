@@ -1,220 +1,241 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>Workshop_VN</title>
-		<style>
-html, body, #canvas {
-	margin: 0;
-	padding: 0;
-	border: 0;
-}
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Godot × AI 視覺小說工作坊｜大七遊戲工作室 × 海苔遊戲工房</title>
+<meta name="description" content="一日現場實作工作坊：用 Godot 搭配 AI，從零做出一款屬於自己的視覺小說。專為女性設計的遊戲製作入門課。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff8f5;
+    --bg-alt: #fdeee9;
+    --surface: #ffffff;
+    --ink: #3a2a33;
+    --ink-soft: #7a6470;
+    --accent: #e0607e;
+    --accent-ink: #ffffff;
+    --accent-soft: #f8d4dc;
+    --line: #efd9df;
+    --tbd: #b49aa6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1f171c; --bg-alt: #2a1f26; --surface: #2f242b;
+      --ink: #f6e9ee; --ink-soft: #c3adb7; --accent: #f07c97; --accent-ink: #1f171c;
+      --accent-soft: #4a2c37; --line: #45343d; --tbd: #8e7681;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1f171c; --bg-alt: #2a1f26; --surface: #2f242b;
+    --ink: #f6e9ee; --ink-soft: #c3adb7; --accent: #f07c97; --accent-ink: #1f171c;
+    --accent-soft: #4a2c37; --line: #45343d; --tbd: #8e7681;
+  }
 
-body {
-	color: white;
-	background-color: black;
-	overflow: hidden;
-	touch-action: none;
-}
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans TC", system-ui, sans-serif; line-height: 1.75;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  section { padding: 72px 0; }
+  h2 {
+    font-family: "Noto Serif TC", serif; font-size: clamp(1.6rem, 4vw, 2.2rem);
+    margin: 0 0 8px; letter-spacing: .04em;
+  }
+  .eyebrow { color: var(--accent); font-weight: 700; letter-spacing: .2em; font-size: .8rem; text-transform: uppercase; }
+  .lead { color: var(--ink-soft); margin: 0 0 32px; }
 
-#canvas {
-	display: block;
-}
+  /* Hero */
+  header.hero { padding: 48px 0 24px; text-align: center; }
+  .collab { font-weight: 700; color: var(--ink-soft); letter-spacing: .12em; font-size: .95rem; }
+  .collab b { color: var(--accent); margin: 0 .4em; }
+  h1 {
+    font-family: "Noto Serif TC", serif; font-weight: 900;
+    font-size: clamp(1.9rem, 6vw, 3.4rem); line-height: 1.3; margin: 12px 0 12px;
+  }
+  .tagline { color: var(--ink-soft); font-size: 1.05rem; margin: 0 auto 28px; max-width: 36em; }
 
-#canvas:focus {
-	outline: none;
-}
+  /* Game */
+  .game-frame {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    border-radius: 16px; overflow: hidden; background: #000;
+    box-shadow: 0 18px 48px -18px rgba(160, 60, 90, .45);
+    border: 1px solid var(--line);
+  }
+  .game-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .game-hint { font-size: .85rem; color: var(--ink-soft); margin-top: 10px; }
+  .skip { display: inline-block; margin-top: 18px; font-weight: 700; text-decoration: none; }
 
-#status, #status-splash, #status-progress {
-	position: absolute;
-	left: 0;
-	right: 0;
-}
+  /* Cards */
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 1.1rem; }
+  .card p { margin: 0; color: var(--ink-soft); }
+  .num { font-family: "Noto Serif TC", serif; color: var(--accent); font-weight: 900; font-size: 1.6rem; }
 
-#status, #status-splash {
-	top: 0;
-	bottom: 0;
-}
+  .alt { background: var(--bg-alt); }
 
-#status {
-	background-color: #242424;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	visibility: hidden;
-}
+  /* Teachers */
+  .teacher { display: flex; flex-direction: column; gap: 6px; }
+  .teacher .role { font-size: .85rem; color: var(--accent); font-weight: 700; }
+  .teacher ul { margin: 6px 0 10px; padding-left: 1.2em; color: var(--ink-soft); }
+  .teacher .links a { margin-right: 14px; font-size: .9rem; }
 
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
-}
+  /* Info table */
+  .info { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .info dl { margin: 0; display: grid; grid-template-columns: 7em 1fr; }
+  .info dt, .info dd { margin: 0; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .info dt { font-weight: 700; background: var(--accent-soft); }
+  .info dl > :nth-last-child(-n+2) { border-bottom: 0; }
+  .tbd { color: var(--tbd); font-style: italic; }
+  @media (max-width: 520px) {
+    .info dl { grid-template-columns: 1fr; }
+    .info dt { border-bottom: 0; padding-bottom: 4px; }
+    .info dd { padding-top: 4px; }
+  }
 
-#status-splash.show-image--false {
-	display: none;
-}
+  .cta {
+    display: inline-block; margin-top: 28px; padding: 14px 36px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 1.1rem;
+    text-decoration: none;
+  }
+  .cta[aria-disabled="true"] { opacity: .55; pointer-events: none; }
 
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
-}
+  /* Steam (intentionally small) */
+  .steam {
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    font-size: .9rem; color: var(--ink-soft);
+    border-top: 1px dashed var(--line); padding-top: 20px; margin-top: 48px;
+  }
+  .steam a { font-weight: 700; }
 
-#status-splash.use-filter--false {
-	image-rendering: pixelated;
-}
+  footer { padding: 32px 0 48px; text-align: center; color: var(--ink-soft); font-size: .85rem; }
+</style>
+</head>
+<body>
 
-#status-progress, #status-notice {
-	display: none;
-}
+<header class="hero">
+  <div class="wrap">
+    <div class="collab">大七遊戲工作室<b>×</b>海苔遊戲工房</div>
+    <h1>一天，做出你的<br>第一款視覺小說</h1>
+    <p class="tagline">Godot 遊戲引擎 × AI 協作，一日現場實作工作坊。<br>不用會寫程式，帶著你的故事來就好。</p>
 
-#status-progress {
-	bottom: 10%;
-	width: 50%;
-	margin: 0 auto;
-}
+    <div class="game-frame">
+      <!-- 把 Godot 匯出的 build/web 整包複製到 landing/game/ -->
+      <iframe src="game/index.html" title="工作坊示範視覺小說" allow="autoplay; fullscreen" loading="lazy"></iframe>
+    </div>
+    <p class="game-hint">↑ 這款小遊戲就是用工作坊教的方法做出來的。先玩玩看吧！</p>
+    <a class="skip" href="#info">直接看工作坊資訊 ↓</a>
+  </div>
+</header>
 
-#status-notice {
-	background-color: #5b3943;
-	border-radius: 0.5rem;
-	border: 1px solid #9b3943;
-	color: #e0e0e0;
-	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-	line-height: 1.3;
-	margin: 0 2rem;
-	overflow: hidden;
-	padding: 1rem;
-	text-align: center;
-	z-index: 1;
-}
-		</style>
-		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
-<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+<section id="about" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">About</div>
+    <h2>這是什麼樣的工作坊？</h2>
+    <p class="lead">一整天、現場動手。從打開 Godot 開始，到帶著一款能玩的小遊戲回家。</p>
+    <div class="grid">
+      <div class="card"><div class="num">01</div><h3>認識 Godot</h3><p>免費、輕量的開源遊戲引擎。學會基本操作與視覺小說的架構。</p></div>
+      <div class="card"><div class="num">02</div><h3>和 AI 一起寫程式</h3><p>學會怎麼跟 AI 溝通、描述需求，讓它幫你解決程式問題。</p></div>
+      <div class="card"><div class="num">03</div><h3>快速產出內容</h3><p>用 AI 與現成素材，快速做出劇情、角色、演出與音樂。</p></div>
+      <div class="card"><div class="num">04</div><h3>完成你的作品</h3><p>當天做出一款可遊玩的短篇視覺小說，可以分享給朋友玩。</p></div>
+    </div>
+  </div>
+</section>
 
-	</head>
-	<body>
-		<canvas id="canvas">
-			Your browser does not support the canvas tag.
-		</canvas>
+<section id="who">
+  <div class="wrap">
+    <div class="eyebrow">For You</div>
+    <h2>適合誰參加？</h2>
+    <p class="lead">本工作坊<strong>限女性參加</strong>，希望打造一個輕鬆、可以放心發問的學習環境。</p>
+    <div class="grid">
+      <div class="card"><h3>想做遊戲，但不知道從哪開始</h3><p>零基礎也沒關係，從安裝軟體開始帶。</p></div>
+      <div class="card"><h3>心裡有故事、有角色</h3><p>喜歡寫故事、畫圖、乙女遊戲，想讓角色動起來。</p></div>
+      <div class="card"><h3>好奇 AI 能幫上什麼忙</h3><p>想實際體驗 AI 輔助創作的流程與限制。</p></div>
+    </div>
+  </div>
+</section>
 
-		<noscript>
-			Your browser does not support JavaScript.
-		</noscript>
+<section id="teachers" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">Teachers</div>
+    <h2>講師介紹</h2>
+    <p class="lead">兩位獨立遊戲開發者，分工帶你走完整個流程。</p>
+    <div class="grid">
+      <div class="card teacher">
+        <h3>大七遊戲工作室</h3>
+        <div class="role">Godot 引擎 ・ 程式概念 ・ AI 溝通</div>
+        <ul>
+          <li>Godot 遊戲引擎操作</li>
+          <li>程式基本概念</li>
+          <li>如何與 AI 溝通、讓它幫你寫程式</li>
+        </ul>
+        <div class="links"><a href="https://dachi.cc/" target="_blank" rel="noopener">dachi.cc</a></div>
+      </div>
+      <div class="card teacher">
+        <h3>海苔遊戲工房（Nori）</h3>
+        <div class="role">劇情 ・ 角色 ・ 演出 ・ 音樂</div>
+        <ul>
+          <li>用 AI 快速發想劇情與角色</li>
+          <li>善用現成素材做出演出效果</li>
+          <li>音樂、音效與配音的取得與處理</li>
+        </ul>
+        <div class="links">
+          <a href="https://nori.tw/" target="_blank" rel="noopener">nori.tw</a>
+          <a href="https://www.starryseaweed.com/" target="_blank" rel="noopener">starryseaweed.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
-			<progress id="status-progress"></progress>
-			<div id="status-notice"></div>
-		</div>
+<section id="info">
+  <div class="wrap">
+    <div class="eyebrow">Information</div>
+    <h2>工作坊資訊</h2>
+    <p class="lead">場次可能不只一場，請以本頁最新資訊為準。</p>
+    <div class="info">
+      <dl>
+        <dt>日期</dt><dd class="tbd">未定</dd>
+        <dt>時間</dt><dd class="tbd">未定（一日課程）</dd>
+        <dt>地點</dt><dd class="tbd">未定</dd>
+        <dt>形式</dt><dd>現場實作，需自備筆電</dd>
+        <dt>對象</dt><dd>限女性・零基礎可</dd>
+        <dt>人數</dt><dd class="tbd">未定</dd>
+        <dt>費用</dt><dd class="tbd">未定</dd>
+        <dt>報名</dt><dd class="tbd">報名連結未定</dd>
+      </dl>
+    </div>
+    <div style="text-align:center">
+      <a class="cta" href="#" aria-disabled="true">報名即將開放</a>
+    </div>
 
-		<script src="index.js"></script>
-		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":38266264,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
-const GODOT_THREADS_ENABLED = false;
-const engine = new Engine(GODOT_CONFIG);
+    <div class="steam">
+      <span>喜歡遊戲裡的兩位角色嗎？他們的故事在《心動除錯 Debug Your Heart》。</span>
+      <a href="https://store.steampowered.com/app/4601900/Debug_Your_Heart/" target="_blank" rel="noopener">Steam 頁面 →</a>
+    </div>
+  </div>
+</section>
 
-(function () {
-	const statusOverlay = document.getElementById('status');
-	const statusProgress = document.getElementById('status-progress');
-	const statusNotice = document.getElementById('status-notice');
+<footer>
+  <div class="wrap">© 大七遊戲工作室 × 海苔遊戲工房</div>
+</footer>
 
-	let initializing = true;
-	let statusMode = '';
-
-	function setStatusMode(mode) {
-		if (statusMode === mode || !initializing) {
-			return;
-		}
-		if (mode === 'hidden') {
-			statusOverlay.remove();
-			initializing = false;
-			return;
-		}
-		statusOverlay.style.visibility = 'visible';
-		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
-		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
-		statusMode = mode;
-	}
-
-	function setStatusNotice(text) {
-		while (statusNotice.lastChild) {
-			statusNotice.removeChild(statusNotice.lastChild);
-		}
-		const lines = text.split('\n');
-		lines.forEach((line) => {
-			statusNotice.appendChild(document.createTextNode(line));
-			statusNotice.appendChild(document.createElement('br'));
-		});
-	}
-
-	function displayFailureNotice(err) {
-		console.error(err);
-		if (err instanceof Error) {
-			setStatusNotice(err.message);
-		} else if (typeof err === 'string') {
-			setStatusNotice(err);
-		} else {
-			setStatusNotice('An unknown error occurred.');
-		}
-		setStatusMode('notice');
-		initializing = false;
-	}
-
-	const missing = Engine.getMissingFeatures({
-		threads: GODOT_THREADS_ENABLED,
-	});
-
-	if (missing.length !== 0) {
-		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
-			let serviceWorkerRegistrationPromise;
-			try {
-				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
-			} catch (err) {
-				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
-			}
-			// There's a chance that installing the service worker would fix the issue
-			Promise.race([
-				serviceWorkerRegistrationPromise.then((registration) => {
-					if (registration != null) {
-						return Promise.reject(new Error('Service worker already exists.'));
-					}
-					return registration;
-				}).then(() => engine.installServiceWorker()),
-				// For some reason, `getRegistration()` can stall
-				new Promise((resolve) => {
-					setTimeout(() => resolve(), 2000);
-				}),
-			]).then(() => {
-				// Reload if there was no error.
-				window.location.reload();
-			}).catch((err) => {
-				console.error('Error while registering service worker:', err);
-			});
-		} else {
-			// Display the message as usual
-			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
-			displayFailureNotice(missingMsg + missing.join('\n'));
-		}
-	} else {
-		setStatusMode('progress');
-		engine.startGame({
-			'onProgress': function (current, total) {
-				if (current > 0 && total > 0) {
-					statusProgress.value = current;
-					statusProgress.max = total;
-				} else {
-					statusProgress.removeAttribute('value');
-					statusProgress.removeAttribute('max');
-				}
-			},
-		}).then(() => {
-			setStatusMode('hidden');
-		}, displayFailureNotice);
-	}
-}());
-		</script>
-	</body>
+<script>
+  // 遊戲結束時，Godot 端呼叫：
+  // JavaScriptBridge.eval("window.parent.postMessage('workshop:learn-more', '*')")
+  window.addEventListener('message', (e) => {
+    if (e.data === 'workshop:learn-more') {
+      document.getElementById('info').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script>
+</body>
 </html>
-
