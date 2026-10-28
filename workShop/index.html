@@ -27,6 +27,10 @@
   }
 
   * { box-sizing: border-box; }
+  /* 避免中文最後只剩一個字掉到下一行 */
+  p, li, h3 { text-wrap: pretty; }
+  h1, h2, .tagline, .lead, .game-hint { word-break: keep-all; text-wrap: balance; }
+  .nb { display: inline-block; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
@@ -64,6 +68,20 @@
     border: 1px solid var(--line);
   }
   .game-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .game-frame:fullscreen, .game-frame.pseudo-fs {
+    aspect-ratio: auto; border-radius: 0; border: 0; box-shadow: none;
+  }
+  .game-frame.pseudo-fs { position: fixed; inset: 0; z-index: 1000; width: 100vw; height: 100dvh; }
+  .fs-btn {
+    position: absolute; right: 10px; bottom: 10px; z-index: 2;
+    width: 40px; height: 40px; border-radius: 10px; border: 0; padding: 0;
+    background: rgba(255, 255, 255, .75); color: #5a3d42; cursor: pointer;
+    display: grid; place-items: center;
+  }
+  .fs-btn svg { width: 22px; height: 22px; }
+  .fs-btn .shrink { display: none; }
+  .is-fs .fs-btn .grow { display: none; }
+  .is-fs .fs-btn .shrink { display: block; }
   .game-hint { font-size: .85rem; color: var(--ink-soft); margin-top: 10px; }
   .skip { display: inline-block; margin-top: 18px; font-weight: 700; text-decoration: none; }
 
@@ -123,11 +141,15 @@
   <div class="wrap">
     <div class="collab">大七遊戲工作室<b>×</b>海苔遊戲工房</div>
     <h1>一天，做出你的<br>第一款視覺小說</h1>
-    <p class="tagline">Godot 遊戲引擎 × AI 協作，一日現場實作工作坊。<br>不用會寫程式，帶著你的故事來就好。</p>
+    <p class="tagline"><span class="nb">Godot 遊戲引擎 × AI 協作，</span><span class="nb">一日現場實作工作坊。</span><br><span class="nb">不用會寫程式，</span><span class="nb">帶著你的故事點子來就好。</span></p>
 
-    <div class="game-frame">
+    <div class="game-frame" id="game">
       <!-- 把 Godot 匯出的 build/web 整包複製到 landing/game/ -->
       <iframe src="game/index.html" title="工作坊示範視覺小說" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      <button class="fs-btn" id="fsBtn" type="button" aria-label="全畫面切換">
+        <svg class="grow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <svg class="shrink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+      </button>
     </div>
     <p class="game-hint">↑ 這款小遊戲就是用工作坊教的方法做出來的。先玩玩看吧！</p>
     <a class="skip" href="#info">直接看工作坊資訊 ↓</a>
@@ -230,11 +252,47 @@
 </footer>
 
 <script>
-  // 遊戲結束時，Godot 端呼叫：
-  // JavaScriptBridge.eval("window.parent.postMessage('workshop:learn-more', '*')")
-  window.addEventListener('message', (e) => {
-    if (e.data === 'workshop:learn-more') {
-      document.getElementById('info').scrollIntoView({ behavior: 'smooth' });
+  const game = document.getElementById('game');
+  const isMobile = matchMedia('(pointer: coarse)').matches;
+  const isFs = () => document.fullscreenElement === game || game.classList.contains('pseudo-fs');
+
+  function syncFsState() { game.classList.toggle('is-fs', isFs()); }
+
+  async function enterFs() {
+    if (isFs()) return;
+    try {
+      await game.requestFullscreen();
+      try { await screen.orientation.lock('landscape'); } catch (e) {}
+    } catch (e) {
+      // iPhone Safari 不支援元素全畫面，改用鋪滿視窗
+      game.classList.add('pseudo-fs');
+      document.body.style.overflow = 'hidden';
+    }
+    syncFsState();
+  }
+
+  async function exitFs() {
+    if (document.fullscreenElement) {
+      try { screen.orientation.unlock(); } catch (e) {}
+      try { await document.exitFullscreen(); } catch (e) {}
+    }
+    game.classList.remove('pseudo-fs');
+    document.body.style.overflow = '';
+    syncFsState();
+  }
+
+  document.getElementById('fsBtn').addEventListener('click', () => isFs() ? exitFs() : enterFs());
+  document.addEventListener('fullscreenchange', syncFsState);
+
+  // Godot 端用 JavaScriptBridge 呼叫 window.parent.postMessage(...)
+  //   workshop:play        按下「開始」或「再看一次」：手機版自動進入橫向全畫面
+  //   workshop:learn-more  按下「了解更多」：縮回來並滑到工作坊資訊
+  window.addEventListener('message', async (e) => {
+    if (e.data === 'workshop:play') {
+      if (isMobile) enterFs();
+    } else if (e.data === 'workshop:learn-more') {
+      await exitFs();
+      setTimeout(() => document.getElementById('info').scrollIntoView({ behavior: 'smooth' }), 300);
     }
   });
 </script>
