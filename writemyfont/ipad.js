@@ -1,7 +1,7 @@
 // iPad 擴充：雙指縮放書寫格、參考字型底字、即時排版預覽
 // 需在 fontdrawer.js 之前載入；執行時才使用 fontdrawer.js 的 glyphMap、settings、loadFromDB。
 const wmfIpad = (function () {
-	const MIN_BOX = 200;
+	const MIN_BOX = 100;
 	const REF_DB = 'WmfIpadDB';		// 參考字型另存一個資料庫，不會混進字型備份檔
 	const REF_FAMILY = 'WmfImportedRef';
 	const SYSTEM_FONTS = {
@@ -40,7 +40,7 @@ const wmfIpad = (function () {
 	// ---------- 書寫格大小 ----------
 	function maxBox() {
 		const w = window.innerWidth, h = window.innerHeight;
-		if (w >= 900 && w > h) return Math.max(MIN_BOX, Math.min(h - 306, w - 412));
+		if (w >= 900 && w > h) return Math.max(MIN_BOX, Math.min(h - 280, w - 364));
 		if (w >= 700) return Math.max(MIN_BOX, Math.min(w - 40, h - 480));
 		return Math.max(MIN_BOX, Math.min(w - 20, h - 340));
 	}

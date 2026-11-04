@@ -6,9 +6,10 @@
     <title>手寫字型產生器 iPad 版</title>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="ipad.css?v=8">
+	<link rel="stylesheet" href="ipad.css?v=10">
 </head>
 <body lang="zh-TW">
+	<div id="wmf-side">
 	<div id="list-container">
 		<label for="listSelect">字表：</label>
 		<select id="listSelect"></select>
@@ -23,12 +24,6 @@
 		<span class="butt" id="prevButton">👈</span>
 		<span class="butt" id="nextButton">👉</span>
     </div>
-	<div id="canvas-container">
-        <canvas id="gridCanvas" width="500" height="500"></canvas>
-        <canvas id="refCanvas" width="500" height="500"></canvas>
-        <canvas id="drawingCanvas" width="500" height="500"></canvas>
-    </div>
-
 	<div id="slider-container">
 		<div id="brushSelector"></div><div id="pressureButton" class="off"></div>
 		<span class="butt use" id="penButton">🖌️</span><span class="butt" id="eraserButton">🚿</span>
@@ -63,6 +58,20 @@
 		<span id="spanDoneCount">-</span>
 		<span class="butt" id="downloadButton">💾</span>
     </div>
+	<div id="progress-container">
+		<progress id="progress-bar" value="0" max="100"></progress>
+		<span id="progress-text">0%</span>
+	</div>
+
+	</div>
+
+	<div id="wmf-work">
+	<div id="canvas-container">
+        <canvas id="gridCanvas" width="500" height="500"></canvas>
+        <canvas id="refCanvas" width="500" height="500"></canvas>
+        <canvas id="drawingCanvas" width="500" height="500"></canvas>
+    </div>
+
 	<div id="wmf-preview">
 		<textarea id="wmf-text" aria-label="預覽文字" placeholder="在這裡打字，看看排版效果"></textarea>
 		<div id="wmf-preview-bar"><label for="wmf-size">大小</label><input id="wmf-size" type="range" min="16" max="96" /><span id="wmf-missing-count"></span></div>
@@ -70,9 +79,6 @@
 		<svg id="wmf-measure" viewBox="0 0 1000 1000" aria-hidden="true"></svg>
 	</div>
 
-	<div id="progress-container">
-		<progress id="progress-bar" value="0" max="100"></progress>
-		<span id="progress-text">0%</span>
 	</div>
 
 	<div id="wmf-ref-container" class="dialog">
@@ -81,7 +87,7 @@
 			<h2>書寫格與參考字</h2>
 
 			<h3>書寫格大小 <span id="wmfBoxValue"></span></h3>
-			<input id="wmfBoxSlider" type="range" min="200" max="800" />
+			<input id="wmfBoxSlider" type="range" min="100" max="800" />
 			<span class="note">也可以在書寫格附近用兩指捏合或撐開來調整。</span>
 
 			<h3>只用 Apple Pencil 寫字</h3>
@@ -272,9 +278,9 @@
 		};
 	</script>
 
-    <script src="ipad.js?v=9"></script>
+    <script src="ipad.js?v=10"></script>
     <script src="pressure-drawing.js"></script>
     <script src="cglyphlist.js"></script>
-    <script src="fontdrawer.js?v=8"></script>
+    <script src="fontdrawer.js?v=10"></script>
 </body>
 </html>
