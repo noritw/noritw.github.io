@@ -25,6 +25,9 @@
 #wmf-output svg { display: block; }
 #wmf-output .wmf-gap { display: inline-block; vertical-align: top; }
 #wmf-output .wmf-missing { color: #b9c2c8; font-family: sans-serif; outline: 1px dashed #d2554f; outline-offset: -2px; }
+#wmf-output { order: 1; }
+#wmf-text { order: 2; }
+#wmf-preview-bar { order: 3; }
 #wmf-measure { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 /* iPad 直向：預覽放在下方 */
