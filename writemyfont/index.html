@@ -6,7 +6,7 @@
     <title>手寫字型產生器 iPad 版</title>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="ipad.css?v=4">
+	<link rel="stylesheet" href="ipad.css?v=5">
 </head>
 <body lang="zh-TW">
 	<div id="list-container">
@@ -42,6 +42,8 @@
 		<span class="butt" id="moveRightButton">➡️</span>
 		<span class="butt" id="moveUpButton">⬆️</span>
 		<span class="butt" id="moveDownButton">⬇️</span>
+		<span class="butt" id="zoomInButton" title="放大這個字">➕</span>
+		<span class="butt" id="zoomOutButton" title="縮小這個字">➖</span>
 		<span class="butt" id="undoButton">↩️</span>
 		<span class="butt" id="wmfRefToggle" title="顯示或隱藏參考字">👻</span>
     </div>
@@ -258,9 +260,9 @@
 		};
 	</script>
 
-    <script src="ipad.js?v=4"></script>
+    <script src="ipad.js?v=5"></script>
     <script src="pressure-drawing.js"></script>
     <script src="cglyphlist.js"></script>
-    <script src="fontdrawer.js"></script>
+    <script src="fontdrawer.js?v=5"></script>
 </body>
 </html>

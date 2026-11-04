@@ -874,6 +874,68 @@ $(document).ready(async function () {
 		};
 	}
 
+	// 放大縮小：連續按時都從同一份原圖計算，避免筆畫越按越糊
+	let zoomState = null;
+
+	function startZoom() {
+		const { width, height } = canvas;
+		const data = ctx.getImageData(0, 0, width, height).data;
+		let x0 = width, y0 = height, x1 = -1, y1 = -1;
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				if (data[(y * width + x) * 4 + 3] === 0) continue;
+				if (x < x0) x0 = x;
+				if (x > x1) x1 = x;
+				if (y < y0) y0 = y;
+				if (y > y1) y1 = y;
+			}
+		}
+		if (x1 < 0) return null;
+
+		const source = document.createElement('canvas');
+		source.width = width;
+		source.height = height;
+		source.getContext('2d').drawImage(canvas, 0, 0);
+
+		// 漢字以字的中心縮放；半形字以基線縮放，才不會離開基線
+		const halfWidth = glyphMap[nowGlyph].w == 'P' || glyphMap[nowGlyph].w == 'H';
+		const scale = settings.scaleRate / 100;
+		const ax = (x0 + x1 + 1) / 2;
+		const ay = halfWidth ? height * (0.5 + (wmfIpad.baselineRatio() - 0.5) / scale) : (y0 + y1 + 1) / 2;
+
+		// 放大到碰到畫布邊緣為止，以免字被裁掉
+		const limits = [ax / (ax - x0), (width - ax) / (x1 + 1 - ax)];
+		if (y0 < ay) limits.push(ay / (ay - y0));
+		if (y1 + 1 > ay) limits.push((height - ay) / (y1 + 1 - ay));
+		return { glyph: nowGlyph, source, ax, ay, factor: 1, maxFactor: Math.min(...limits), result: canvas.toDataURL() };
+	}
+
+	function zoomGlyph(step) {
+		const current = canvas.toDataURL();
+		if (!zoomState || zoomState.glyph != nowGlyph || zoomState.result != current) zoomState = startZoom();
+		if (!zoomState) return;
+
+		const factor = Math.max(0.2, Math.min(zoomState.maxFactor, zoomState.factor * step));
+		if (factor == zoomState.factor) return;
+		undoStack.push(current); // 儲存當前畫布狀態到 undoStack
+		zoomState.factor = factor;
+
+		const { source, ax, ay } = zoomState;
+		ctx.save();
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.imageSmoothingQuality = 'high';
+		ctx.translate(ax, ay);
+		ctx.scale(factor, factor);
+		ctx.translate(-ax, -ay);
+		ctx.drawImage(source, 0, 0);
+		ctx.restore();
+		zoomState.result = canvas.toDataURL();
+		saveToLocalDB(); // 更新 Local Storage
+	}
+
+	$('#zoomInButton').on('click', function () { zoomGlyph(1.05); }); // 放大 5%
+	$('#zoomOutButton').on('click', function () { zoomGlyph(1 / 1.05); }); // 縮小 5%
+
 	$('#moveLeftButton').on('click', function () { moveGlyph(-10, 0); }); // 向左移動 10px
 	$('#moveRightButton').on('click', function () { moveGlyph(10, 0); }); // 向右移動 10px
 	$('#moveUpButton').on('click', function () { moveGlyph(0, -10); }); // 向上移動 10px
