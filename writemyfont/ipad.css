@@ -28,7 +28,7 @@
 @media screen and (min-width: 900px) and (orientation: landscape) {
 	body {
 		display: grid;
-		grid-template-columns: auto minmax(280px, 1fr);
+		grid-template-columns: minmax(0, 1fr) clamp(320px, 34vw, 420px);
 		grid-template-rows: auto auto auto minmax(0, 1fr);
 		column-gap: 20px;
 		align-items: start;

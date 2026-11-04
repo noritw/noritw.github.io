@@ -39,7 +39,7 @@ const wmfIpad = (function () {
 	// ---------- 書寫格大小 ----------
 	function maxBox() {
 		const w = window.innerWidth, h = window.innerHeight;
-		if (w >= 900 && w > h) return Math.max(MIN_BOX, Math.min(h - 150, w - 340));
+		if (w >= 900 && w > h) return Math.max(MIN_BOX, Math.min(h - 150, w - Math.min(420, Math.max(320, w * 0.34)) - 60));
 		if (w >= 700) return Math.max(MIN_BOX, Math.min(w - 40, h - 480));
 		return Math.max(MIN_BOX, Math.min(w - 20, h - 340));
 	}
