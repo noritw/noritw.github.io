@@ -190,7 +190,7 @@ const wmfIpad = (function () {
 					for (let dx = -1; dx <= 1; dx++) {
 						const nx = x + dx, ny = y + dy;
 						if ((!dx && !dy) || nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
-						if (inside[ny * w + nx] - r >= Math.hypot(dx, dy) * 0.9) {
+						if (inside[ny * w + nx] - r >= Math.hypot(dx, dy) * 0.6) {
 							covered = true;
 							break;
 						}
