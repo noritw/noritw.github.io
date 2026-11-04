@@ -6,6 +6,7 @@
 
 #button-container { width: min(360px, 100%); gap: 8px; flex-wrap: wrap; justify-content: center; }
 #wmfRefToggle.wmf-off { opacity: 0.35; }
+#button-container span.wmf-word { font-size: 22px; width: 36px; line-height: 36px; text-align: center; background: #fff; border: 1px solid #888; border-radius: 8px; }
 #wmf-ref-container select { font-size: 1.1em; }
 
 #wmf-preview { display: none; box-sizing: border-box; background: #fff; border: 1px solid #ccc; padding: 10px; min-height: 0; overflow: hidden; flex-direction: column; gap: 8px; }

@@ -907,20 +907,20 @@ $(document).ready(async function () {
 		const limits = [ax / (ax - x0), (width - ax) / (x1 + 1 - ax)];
 		if (y0 < ay) limits.push(ay / (ay - y0));
 		if (y1 + 1 > ay) limits.push((height - ay) / (y1 + 1 - ay));
-		return { glyph: nowGlyph, source, ax, ay, factor: 1, maxFactor: Math.min(...limits), result: canvas.toDataURL() };
+		return { glyph: nowGlyph, source, ax, ay, factor: 1, weight: 0, radius: wmfIpad.inkRadius(ctx), maxFactor: Math.min(...limits), result: canvas.toDataURL() };
 	}
 
-	function zoomGlyph(step) {
+	function adjustGlyph(change) {
 		const current = canvas.toDataURL();
 		if (!zoomState || zoomState.glyph != nowGlyph || zoomState.result != current) zoomState = startZoom();
 		if (!zoomState) return;
 
-		const factor = Math.max(0.2, Math.min(zoomState.maxFactor, zoomState.factor * step));
-		if (factor == zoomState.factor) return;
+		const { factor: oldFactor, weight: oldWeight } = zoomState;
+		change(zoomState);
+		const { source, ax, ay, factor, weight, radius } = zoomState;
+		if (factor == oldFactor && weight == oldWeight) return;
 		undoStack.push(current); // 儲存當前畫布狀態到 undoStack
-		zoomState.factor = factor;
 
-		const { source, ax, ay } = zoomState;
 		ctx.save();
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.imageSmoothingQuality = 'high';
@@ -929,12 +929,31 @@ $(document).ready(async function () {
 		ctx.translate(-ax, -ay);
 		ctx.drawImage(source, 0, 0);
 		ctx.restore();
+
+		// 縮放造成的粗細變化抵消掉，再加上手動調整；至少留下細細一筆
+		const keep = wmfIpad.keepWeight() ? radius * (1 - factor) : 0;
+		wmfIpad.offsetInk(ctx, Math.max(keep + weight, 2 - radius * factor));
+
 		zoomState.result = canvas.toDataURL();
 		saveToLocalDB(); // 更新 Local Storage
 	}
 
+	function zoomGlyph(step) {
+		adjustGlyph(function (state) {
+			state.factor = Math.max(0.2, Math.min(state.maxFactor, state.factor * step));
+		});
+	}
+
+	function weightGlyph(step) {
+		adjustGlyph(function (state) {
+			state.weight = Math.max(2 - state.radius, Math.min(state.radius * 2, state.weight + step));
+		});
+	}
+
 	$('#zoomInButton').on('click', function () { zoomGlyph(1.05); }); // 放大 5%
 	$('#zoomOutButton').on('click', function () { zoomGlyph(1 / 1.05); }); // 縮小 5%
+	$('#thickerButton').on('click', function () { weightGlyph(1); }); // 筆畫每邊加粗 1px
+	$('#thinnerButton').on('click', function () { weightGlyph(-1); }); // 筆畫每邊減細 1px
 
 	$('#moveLeftButton').on('click', function () { moveGlyph(-10, 0); }); // 向左移動 10px
 	$('#moveRightButton').on('click', function () { moveGlyph(10, 0); }); // 向右移動 10px

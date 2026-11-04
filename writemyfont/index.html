@@ -6,7 +6,7 @@
     <title>手寫字型產生器 iPad 版</title>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="ipad.css?v=5">
+	<link rel="stylesheet" href="ipad.css?v=6">
 </head>
 <body lang="zh-TW">
 	<div id="list-container">
@@ -44,6 +44,8 @@
 		<span class="butt" id="moveDownButton">⬇️</span>
 		<span class="butt" id="zoomInButton" title="放大這個字">➕</span>
 		<span class="butt" id="zoomOutButton" title="縮小這個字">➖</span>
+		<span class="butt wmf-word" id="thickerButton" title="筆畫變粗">粗</span>
+		<span class="butt wmf-word" id="thinnerButton" title="筆畫變細">細</span>
 		<span class="butt" id="undoButton">↩️</span>
 		<span class="butt" id="wmfRefToggle" title="顯示或隱藏參考字">👻</span>
     </div>
@@ -79,6 +81,10 @@
 			<h3>只用 Apple Pencil 寫字</h3>
 			<input id="wmfPenOnly" type="checkbox" />
 			<span class="note">開啟後手指不會畫線，手掌也不會誤觸。</span>
+
+			<h3>放大縮小時維持筆畫粗細</h3>
+			<input id="wmfKeepWeight" type="checkbox" />
+			<span class="note">開啟後 ➕➖ 只改變字的大小，筆畫粗細不變。</span>
 
 			<h3>使用真實基線</h3>
 			<input id="wmfTrueBaseline" type="checkbox" />
@@ -260,9 +266,9 @@
 		};
 	</script>
 
-    <script src="ipad.js?v=5"></script>
+    <script src="ipad.js?v=6"></script>
     <script src="pressure-drawing.js"></script>
     <script src="cglyphlist.js"></script>
-    <script src="fontdrawer.js?v=5"></script>
+    <script src="fontdrawer.js?v=6"></script>
 </body>
 </html>

@@ -30,7 +30,8 @@ const wmfIpad = (function () {
 		refSource: loadPref('refSource', 'pingfang'),
 		refOpacity: loadPref('refOpacity', 30),
 		previewText: loadPref('previewText', '海苔的手寫字型 Hello 123'),
-		previewSize: loadPref('previewSize', 36)
+		previewSize: loadPref('previewSize', 36),
+		keepWeight: loadPref('keepWeight', true)
 	};
 
 	let currentChar = '';
@@ -105,6 +106,89 @@ const wmfIpad = (function () {
 		if (oe.pointerType) return oe.pointerType === 'touch';
 		if (oe.touches && oe.touches.length) return oe.touches[0].touchType !== 'stylus';
 		return false;
+	}
+
+	// ---------- 筆畫粗細 ----------
+	// 一維距離平方轉換（Felzenszwalb），f 會被改寫成結果
+	function distanceLine(f, n, v, z, d) {
+		let k = 0;
+		v[0] = 0;
+		z[0] = -Infinity;
+		z[1] = Infinity;
+		for (let q = 1; q < n; q++) {
+			let s;
+			while (true) {
+				s = (f[q] + q * q - f[v[k]] - v[k] * v[k]) / (2 * q - 2 * v[k]);
+				if (s > z[k]) break;
+				k--;
+			}
+			k++;
+			v[k] = q;
+			z[k] = s;
+			z[k + 1] = Infinity;
+		}
+		k = 0;
+		for (let q = 0; q < n; q++) {
+			while (z[k + 1] < q) k++;
+			d[q] = (q - v[k]) * (q - v[k]) + f[v[k]];
+		}
+		for (let q = 0; q < n; q++) f[q] = d[q];
+	}
+	// 回傳每個像素到最近「target 像素」的距離
+	function distanceTo(ink, target, w, h) {
+		const BIG = 1e10, size = Math.max(w, h);
+		const grid = new Float64Array(w * h);
+		const f = new Float64Array(size), d = new Float64Array(size), z = new Float64Array(size + 1);
+		const v = new Int32Array(size);
+		for (let i = 0; i < w * h; i++) grid[i] = ink[i] === target ? 0 : BIG;
+		for (let x = 0; x < w; x++) {
+			for (let y = 0; y < h; y++) f[y] = grid[y * w + x];
+			distanceLine(f, h, v, z, d);
+			for (let y = 0; y < h; y++) grid[y * w + x] = f[y];
+		}
+		for (let y = 0; y < h; y++) {
+			for (let x = 0; x < w; x++) f[x] = grid[y * w + x];
+			distanceLine(f, w, v, z, d);
+			for (let x = 0; x < w; x++) grid[y * w + x] = Math.sqrt(f[x]);
+		}
+		return grid;
+	}
+	function inkMask(pixels, w, h) {
+		const ink = new Uint8Array(w * h);
+		for (let i = 0; i < w * h; i++) ink[i] = pixels[i * 4 + 3] >= 128 ? 1 : 0;
+		return ink;
+	}
+	// 估算筆畫半徑：取筆畫中心線上距離值的中位數
+	function inkRadius(ctx) {
+		const { width: w, height: h } = ctx.canvas;
+		const ink = inkMask(ctx.getImageData(0, 0, w, h).data, w, h);
+		const inside = distanceTo(ink, 0, w, h);
+		const ridge = [];
+		for (let y = 1; y < h - 1; y++) {
+			for (let x = 1; x < w - 1; x++) {
+				const i = y * w + x, r = inside[i];
+				if (ink[i] && r >= inside[i - 1] && r >= inside[i + 1] && r >= inside[i - w] && r >= inside[i + w]) ridge.push(r);
+			}
+		}
+		if (!ridge.length) return 0;
+		ridge.sort(function (a, b) { return a - b; });
+		return ridge[ridge.length >> 1];
+	}
+	// 把筆畫邊緣往外推（正值）或往內收（負值），單位是畫布像素
+	function offsetInk(ctx, delta) {
+		if (Math.abs(delta) < 0.01) return;
+		const { width: w, height: h } = ctx.canvas;
+		const image = ctx.getImageData(0, 0, w, h);
+		const pixels = image.data;
+		const ink = inkMask(pixels, w, h);
+		const inside = distanceTo(ink, 0, w, h);
+		const outside = distanceTo(ink, 1, w, h);
+		for (let i = 0; i < w * h; i++) {
+			const edge = ink[i] ? 0.5 - inside[i] : outside[i] - 0.5;	// 負值在筆畫內
+			pixels[i * 4] = pixels[i * 4 + 1] = pixels[i * 4 + 2] = 0;
+			pixels[i * 4 + 3] = Math.max(0, Math.min(1, 0.5 + delta - edge)) * 255;
+		}
+		ctx.putImageData(image, 0, 0);
 	}
 
 	// ---------- 參考字型 ----------
@@ -272,6 +356,7 @@ const wmfIpad = (function () {
 		document.getElementById('wmfRefOpacity').value = prefs.refOpacity;
 		document.getElementById('wmfPenOnly').checked = prefs.penOnly;
 		document.getElementById('wmfTrueBaseline').checked = prefs.trueBaseline;
+		document.getElementById('wmfKeepWeight').checked = prefs.keepWeight;
 		textInput.value = prefs.previewText;
 		sizeInput.value = prefs.previewSize;
 
@@ -292,6 +377,7 @@ const wmfIpad = (function () {
 		});
 		bindSetting('wmfBoxSlider', 'input', function () { setBox(this.value * 1, true); });
 		bindSetting('wmfPenOnly', 'change', function () { savePref('penOnly', this.checked); });
+		bindSetting('wmfKeepWeight', 'change', function () { savePref('keepWeight', this.checked); });
 		bindSetting('wmfTrueBaseline', 'change', function () {
 			savePref('trueBaseline', this.checked);
 			initCanvas(document.getElementById('drawingCanvas'));
@@ -349,6 +435,9 @@ const wmfIpad = (function () {
 
 	return {
 		ignoreStroke: ignoreStroke,
+		inkRadius: inkRadius,
+		offsetInk: offsetInk,
+		keepWeight: function () { return prefs.keepWeight; },
 		didPinch: function () { return pinch.moved; },
 		baselineRatio: function () { return prefs.trueBaseline ? 0.88 : 0.75; },
 		onGrid: drawReference,
