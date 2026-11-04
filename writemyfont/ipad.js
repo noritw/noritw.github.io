@@ -174,6 +174,35 @@ const wmfIpad = (function () {
 		ridge.sort(function (a, b) { return a - b; });
 		return ridge[ridge.length >> 1];
 	}
+	// 把字拆成骨架上的圓：[x, y, 半徑, ...]，這些圓疊起來就是原本的字
+	function inkDiscs(ctx) {
+		const { width: w, height: h } = ctx.canvas;
+		const ink = inkMask(ctx.getImageData(0, 0, w, h).data, w, h);
+		const inside = distanceTo(ink, 0, w, h);
+		const discs = [];
+		for (let y = 0; y < h; y++) {
+			for (let x = 0; x < w; x++) {
+				const i = y * w + x, r = inside[i];
+				if (!ink[i]) continue;
+				const left = x > 0 ? inside[i - 1] : 0, right = x < w - 1 ? inside[i + 1] : 0;
+				const up = y > 0 ? inside[i - w] : 0, down = y < h - 1 ? inside[i + w] : 0;
+				if ((r >= left && r >= right) || (r >= up && r >= down)) discs.push(x + 0.5, y + 0.5, r - 0.5);
+			}
+		}
+		return discs;
+	}
+	// 只移動圓心、不改半徑，所以筆畫粗細不受縮放影響
+	function drawDiscs(ctx, discs, ax, ay, fx, fy, weight) {
+		ctx.fillStyle = '#000';
+		ctx.beginPath();
+		for (let i = 0; i < discs.length; i += 3) {
+			const x = ax + (discs[i] - ax) * fx, y = ay + (discs[i + 1] - ay) * fy;
+			const r = Math.max(0.75, discs[i + 2] + weight);
+			ctx.moveTo(x + r, y);
+			ctx.arc(x, y, r, 0, Math.PI * 2);
+		}
+		ctx.fill();
+	}
 	// 把筆畫邊緣往外推（正值）或往內收（負值），單位是畫布像素
 	function offsetInk(ctx, delta) {
 		if (Math.abs(delta) < 0.01) return;
@@ -436,6 +465,8 @@ const wmfIpad = (function () {
 	return {
 		ignoreStroke: ignoreStroke,
 		inkRadius: inkRadius,
+		inkDiscs: inkDiscs,
+		drawDiscs: drawDiscs,
 		offsetInk: offsetInk,
 		keepWeight: function () { return prefs.keepWeight; },
 		didPinch: function () { return pinch.moved; },

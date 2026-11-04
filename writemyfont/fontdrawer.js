@@ -904,10 +904,14 @@ $(document).ready(async function () {
 		const ay = halfWidth ? height * (0.5 + (wmfIpad.baselineRatio() - 0.5) / scale) : (y0 + y1 + 1) / 2;
 
 		// 放大到碰到畫布邊緣為止，以免字被裁掉
-		const limits = [ax / (ax - x0), (width - ax) / (x1 + 1 - ax)];
-		if (y0 < ay) limits.push(ay / (ay - y0));
-		if (y1 + 1 > ay) limits.push((height - ay) / (y1 + 1 - ay));
-		return { glyph: nowGlyph, source, ax, ay, factor: 1, weight: 0, radius: wmfIpad.inkRadius(ctx), maxFactor: Math.min(...limits), result: canvas.toDataURL() };
+		const maxX = Math.min(ax / (ax - x0), (width - ax) / (x1 + 1 - ax));
+		const yLimits = [];
+		if (y0 < ay) yLimits.push(ay / (ay - y0));
+		if (y1 + 1 > ay) yLimits.push((height - ay) / (y1 + 1 - ay));
+		return {
+			glyph: nowGlyph, source, ax, ay, fx: 1, fy: 1, weight: 0, maxX, maxY: Math.min(...yLimits),
+			radius: wmfIpad.inkRadius(ctx), discs: wmfIpad.inkDiscs(ctx), result: canvas.toDataURL()
+		};
 	}
 
 	function adjustGlyph(change) {
@@ -915,32 +919,42 @@ $(document).ready(async function () {
 		if (!zoomState || zoomState.glyph != nowGlyph || zoomState.result != current) zoomState = startZoom();
 		if (!zoomState) return;
 
-		const { factor: oldFactor, weight: oldWeight } = zoomState;
+		const { fx: oldX, fy: oldY, weight: oldWeight } = zoomState;
 		change(zoomState);
-		const { source, ax, ay, factor, weight, radius } = zoomState;
-		if (factor == oldFactor && weight == oldWeight) return;
+		const { source, discs, ax, ay, fx, fy, weight, radius } = zoomState;
+		if (fx == oldX && fy == oldY && weight == oldWeight) return;
 		undoStack.push(current); // 儲存當前畫布狀態到 undoStack
 
-		ctx.save();
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.imageSmoothingQuality = 'high';
-		ctx.translate(ax, ay);
-		ctx.scale(factor, factor);
-		ctx.translate(-ax, -ay);
-		ctx.drawImage(source, 0, 0);
-		ctx.restore();
-
-		// 縮放造成的粗細變化抵消掉，再加上手動調整；至少留下細細一筆
-		const keep = wmfIpad.keepWeight() ? radius * (1 - factor) : 0;
-		wmfIpad.offsetInk(ctx, Math.max(keep + weight, 2 - radius * factor));
+		if (fx == 1 && fy == 1 && weight == 0) {
+			ctx.drawImage(source, 0, 0);
+		} else if (wmfIpad.keepWeight()) {
+			wmfIpad.drawDiscs(ctx, discs, ax, ay, fx, fy, weight);
+		} else {
+			ctx.save();
+			ctx.imageSmoothingQuality = 'high';
+			ctx.translate(ax, ay);
+			ctx.scale(fx, fy);
+			ctx.translate(-ax, -ay);
+			ctx.drawImage(source, 0, 0);
+			ctx.restore();
+			wmfIpad.offsetInk(ctx, Math.max(weight, 2 - radius * Math.min(fx, fy)));
+		}
 
 		zoomState.result = canvas.toDataURL();
 		saveToLocalDB(); // 更新 Local Storage
 	}
 
-	function zoomGlyph(step) {
+	function zoomGlyph(stepX, stepY) {
 		adjustGlyph(function (state) {
-			state.factor = Math.max(0.2, Math.min(state.maxFactor, state.factor * step));
+			if (stepX == stepY) {	// 等比例縮放：任一方向到極限就一起停，比例才不會跑掉
+				const step = Math.max(0.2 / state.fx, 0.2 / state.fy, Math.min(state.maxX / state.fx, state.maxY / state.fy, stepX));
+				state.fx *= step;
+				state.fy *= step;
+				return;
+			}
+			state.fx = Math.max(0.2, Math.min(state.maxX, state.fx * stepX));
+			state.fy = Math.max(0.2, Math.min(state.maxY, state.fy * stepY));
 		});
 	}
 
@@ -950,8 +964,12 @@ $(document).ready(async function () {
 		});
 	}
 
-	$('#zoomInButton').on('click', function () { zoomGlyph(1.05); }); // 放大 5%
-	$('#zoomOutButton').on('click', function () { zoomGlyph(1 / 1.05); }); // 縮小 5%
+	$('#zoomInButton').on('click', function () { zoomGlyph(1.05, 1.05); }); // 放大 5%
+	$('#zoomOutButton').on('click', function () { zoomGlyph(1 / 1.05, 1 / 1.05); }); // 縮小 5%
+	$('#widerButton').on('click', function () { zoomGlyph(1.05, 1); }); // 水平放大 5%
+	$('#narrowerButton').on('click', function () { zoomGlyph(1 / 1.05, 1); }); // 水平縮小 5%
+	$('#tallerButton').on('click', function () { zoomGlyph(1, 1.05); }); // 垂直放大 5%
+	$('#shorterButton').on('click', function () { zoomGlyph(1, 1 / 1.05); }); // 垂直縮小 5%
 	$('#thickerButton').on('click', function () { weightGlyph(1); }); // 筆畫每邊加粗 1px
 	$('#thinnerButton').on('click', function () { weightGlyph(-1); }); // 筆畫每邊減細 1px
 
