@@ -6,7 +6,7 @@
     <title>手寫字型產生器 iPad 版</title>
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="ipad.css?v=11">
+	<link rel="stylesheet" href="ipad.css?v=12">
 </head>
 <body lang="zh-TW">
 	<div id="wmf-side">
@@ -74,7 +74,7 @@
 
 	<div id="wmf-preview">
 		<textarea id="wmf-text" aria-label="預覽文字" placeholder="在這裡打字，看看排版效果"></textarea>
-		<div id="wmf-preview-bar"><label for="wmf-size">大小</label><input id="wmf-size" type="range" min="16" max="96" /><span id="wmf-missing-count"></span></div>
+		<div id="wmf-preview-bar"><label for="wmf-size">大小</label><input id="wmf-size" type="range" min="16" max="96" /><span id="wmf-missing-count"></span><button type="button" id="wmf-load-list">載入字表</button><button type="button" id="wmf-load-missing">只看未寫</button></div>
 		<div id="wmf-output"></div>
 		<svg id="wmf-measure" viewBox="0 0 1000 1000" aria-hidden="true"></svg>
 	</div>
@@ -278,7 +278,7 @@
 		};
 	</script>
 
-    <script src="ipad.js?v=10"></script>
+    <script src="ipad.js?v=12"></script>
     <script src="pressure-drawing.js"></script>
     <script src="cglyphlist.js"></script>
     <script src="fontdrawer.js?v=10"></script>

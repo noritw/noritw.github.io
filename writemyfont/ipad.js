@@ -377,8 +377,25 @@ const wmfIpad = (function () {
 			}
 			frag.appendChild(cell);
 		}
+		const scrollTop = out.scrollTop;
 		out.replaceChildren(frag);
+		out.scrollTop = scrollTop;		// 寫完字重畫時不要跳回最上面
 		document.getElementById('wmf-missing-count').textContent = missing ? missing + ' 字未寫，點一下可去寫' : '全部都寫好了';
+	}
+	// 把目前字表的字放進預覽；onlyMissing 時只放還沒寫的字
+	async function loadList(onlyMissing) {
+		const names = glyphList[document.getElementById('listSelect').value] || [];
+		let text = '';
+		for (const name of names) {
+			const char = glyphMap[name].c;
+			if (name.indexOf('.vert') >= 0 || Array.from(char).length !== 1 || glyphForChar(char) !== name) continue;
+			if (onlyMissing && await glyphSVG(name)) continue;
+			text += char;
+		}
+		document.getElementById('wmf-text').value = text;
+		document.getElementById('wmf-output').scrollTop = 0;
+		savePref('previewText', text);
+		queueRender(0);
 	}
 	function queueRender(delay) {
 		clearTimeout(renderTimer);
@@ -450,6 +467,8 @@ const wmfIpad = (function () {
 			savePref('previewSize', this.value * 1);
 			queueRender(60);
 		});
+		bindSetting('wmf-load-list', 'click', function () { loadList(false); });
+		bindSetting('wmf-load-missing', 'click', function () { loadList(true); });
 		bindSetting('wmf-output', 'click', function (e) {
 			const cell = e.target.closest('[data-char]');
 			if (cell && window.wmfFindChar) window.wmfFindChar(cell.dataset.char);
