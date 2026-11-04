@@ -909,7 +909,7 @@ $(document).ready(async function () {
 		if (y0 < ay) yLimits.push(ay / (ay - y0));
 		if (y1 + 1 > ay) yLimits.push((height - ay) / (y1 + 1 - ay));
 		return {
-			glyph: nowGlyph, source, ax, ay, fx: 1, fy: 1, weight: 0, maxX, maxY: Math.min(...yLimits),
+			glyph: nowGlyph, source, ax, ay, ix: (x0 + x1 + 1) / 2, iy: (y0 + y1 + 1) / 2, angle: 0, fx: 1, fy: 1, weight: 0, maxX, maxY: Math.min(...yLimits),
 			radius: wmfIpad.inkRadius(ctx), discs: wmfIpad.inkDiscs(ctx), result: canvas.toDataURL()
 		};
 	}
@@ -919,21 +919,23 @@ $(document).ready(async function () {
 		if (!zoomState || zoomState.glyph != nowGlyph || zoomState.result != current) zoomState = startZoom();
 		if (!zoomState) return;
 
-		const { fx: oldX, fy: oldY, weight: oldWeight } = zoomState;
+		const { fx: oldX, fy: oldY, weight: oldWeight, angle: oldAngle } = zoomState;
 		change(zoomState);
-		const { source, discs, ax, ay, fx, fy, weight, radius } = zoomState;
-		if (fx == oldX && fy == oldY && weight == oldWeight) return;
+		const { source, discs, ax, ay, ix, iy, angle, fx, fy, weight, radius } = zoomState;
+		if (fx == oldX && fy == oldY && weight == oldWeight && angle == oldAngle) return;
 		undoStack.push(current); // 儲存當前畫布狀態到 undoStack
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		if (fx == 1 && fy == 1 && weight == 0) {
+		if (fx == 1 && fy == 1 && weight == 0 && angle == 0) {
 			ctx.drawImage(source, 0, 0);
 		} else if (wmfIpad.keepWeight()) {
-			wmfIpad.drawDiscs(ctx, discs, ax, ay, fx, fy, weight);
+			wmfIpad.drawDiscs(ctx, discs, zoomState);
 		} else {
 			ctx.save();
 			ctx.imageSmoothingQuality = 'high';
-			ctx.translate(ax, ay);
+			ctx.translate(ix, iy);
+			ctx.rotate(angle);
+			ctx.translate(ax - ix, ay - iy);
 			ctx.scale(fx, fy);
 			ctx.translate(-ax, -ay);
 			ctx.drawImage(source, 0, 0);
@@ -958,6 +960,12 @@ $(document).ready(async function () {
 		});
 	}
 
+	function rotateGlyph(degrees) {
+		adjustGlyph(function (state) {
+			state.angle = Math.round((state.angle * 180 / Math.PI + degrees) * 1000) / 1000 % 360 * Math.PI / 180;
+		});
+	}
+
 	function weightGlyph(step) {
 		adjustGlyph(function (state) {
 			state.weight = Math.max(2 - state.radius, Math.min(state.radius * 2, state.weight + step));
@@ -966,6 +974,8 @@ $(document).ready(async function () {
 
 	$('#zoomInButton').on('click', function () { zoomGlyph(1.05, 1.05); }); // 放大 5%
 	$('#zoomOutButton').on('click', function () { zoomGlyph(1 / 1.05, 1 / 1.05); }); // 縮小 5%
+	$('#rotateRightButton').on('click', function () { rotateGlyph(2); }); // 順時針 2 度
+	$('#rotateLeftButton').on('click', function () { rotateGlyph(-2); }); // 逆時針 2 度
 	$('#widerButton').on('click', function () { zoomGlyph(1.05, 1); }); // 水平放大 5%
 	$('#narrowerButton').on('click', function () { zoomGlyph(1 / 1.05, 1); }); // 水平縮小 5%
 	$('#tallerButton').on('click', function () { zoomGlyph(1, 1.05); }); // 垂直放大 5%

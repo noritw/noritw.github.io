@@ -184,19 +184,32 @@ const wmfIpad = (function () {
 			for (let x = 0; x < w; x++) {
 				const i = y * w + x, r = inside[i];
 				if (!ink[i]) continue;
-				const left = x > 0 ? inside[i - 1] : 0, right = x < w - 1 ? inside[i + 1] : 0;
-				const up = y > 0 ? inside[i - w] : 0, down = y < h - 1 ? inside[i + w] : 0;
-				if ((r >= left && r >= right) || (r >= up && r >= down)) discs.push(x + 0.5, y + 0.5, r - 0.5);
+				// 鄰點的圓能完全蓋住這個圓時，這個點就不在骨架上
+				let covered = false;
+				for (let dy = -1; dy <= 1 && !covered; dy++) {
+					for (let dx = -1; dx <= 1; dx++) {
+						const nx = x + dx, ny = y + dy;
+						if ((!dx && !dy) || nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+						if (inside[ny * w + nx] - r >= Math.hypot(dx, dy) * 0.9) {
+							covered = true;
+							break;
+						}
+					}
+				}
+				if (!covered) discs.push(x + 0.5, y + 0.5, r - 0.5);
 			}
 		}
 		return discs;
 	}
 	// 只移動圓心、不改半徑，所以筆畫粗細不受縮放影響
-	function drawDiscs(ctx, discs, ax, ay, fx, fy, weight) {
+	function drawDiscs(ctx, discs, state) {
+		const { ax, ay, fx, fy, ix, iy, angle, weight } = state;
+		const cos = Math.cos(angle), sin = Math.sin(angle);
 		ctx.fillStyle = '#000';
 		ctx.beginPath();
 		for (let i = 0; i < discs.length; i += 3) {
-			const x = ax + (discs[i] - ax) * fx, y = ay + (discs[i + 1] - ay) * fy;
+			const sx = ax + (discs[i] - ax) * fx - ix, sy = ay + (discs[i + 1] - ay) * fy - iy;
+			const x = ix + sx * cos - sy * sin, y = iy + sx * sin + sy * cos;
 			const r = Math.max(0.75, discs[i + 2] + weight);
 			ctx.moveTo(x + r, y);
 			ctx.arc(x, y, r, 0, Math.PI * 2);
