@@ -49,7 +49,8 @@
 	#wmf-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; overflow-y: auto; }
 	#wmf-work { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; min-height: 0; }
 	#list-container, #navi-container, #progress-container { position: static; box-sizing: border-box; width: 100%; padding: 0; background: none; box-shadow: none; }
-	#navi-container, #progress-container { margin-top: auto; }
+	#navi-container, #progress-container { margin-top: auto; order: 9; }
+	#lineWidthSlider { width: 90px; margin-left: 8px; }
 	#demo-container { width: 100%; margin: 0; }
 	#slider-container { margin: 0; }
 	#button-container { width: 100%; }
