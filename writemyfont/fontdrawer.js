@@ -364,6 +364,8 @@ $(document).ready(async function () {
 	let ratio = canvas.height / $canvas.height();
     let isDrawing = false;
     const undoStack = []; // 儲存畫布狀態的堆疊
+    const redoStack = []; // 復原後可以重做的狀態
+    let strokeCancelled = false; // 這次雙指手勢已取消過筆畫，不要再算成雙指復原
 	const $naviContainer = $('#navi-container');
 	const $progressContainer = $('#progress-container');
     const $progressBar = $('#progress-bar');
@@ -442,6 +444,7 @@ $(document).ready(async function () {
 
 		// 載入之前的畫布內容
 		undoStack.length = 0; // 清空復原堆疊
+		redoStack.length = 0;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		loadCanvasData(nowGlyph);
 		wmfIpad.onGlyph(glyphMap[nowGlyph].c);
@@ -699,13 +702,16 @@ $(document).ready(async function () {
 	$canvas.on('mousedown touchstart pointerdown', function (event) {
 		if (wmfIpad.ignoreStroke(event) && !isDrawing) return;
 
-		if (event.touches && event.touches.length === 2) {
-			if (isDrawing) $('#undoButton').trigger('click');		// 先撤銷掉目前的筆劃
+		if (event.touches && wmfIpad.fingerCount(event) === 2) {
+			if (isDrawing) {		// 先撤銷掉目前的筆劃
+				strokeCancelled = true;
+				if (undoStack.length > 0) restoreCanvas(undoStack.pop());
+			}
 			isDrawing = false;
 			return;
 		}
 
-		if (isDrawing && !event.type.includes('pointer')) return;
+		if (isDrawing) return;	// 筆畫進行中，其他手指或手掌不能重新開始一筆
 
 		const { x, y } = getCanvasCoordinates(event);
 		var pressureVal = getPressureValue('start', event, x, y);
@@ -739,7 +745,7 @@ $(document).ready(async function () {
 
     // 繪製中
 	$canvas.on('mousemove touchmove pointermove', function (event) {
-		if (!isDrawing) return;
+		if (!isDrawing || wmfIpad.ignoreStroke(event)) return;
 	    const { x, y } = getCanvasCoordinates(event);
 		var pressureVal = getPressureValue('move', event, x, y);
 		var angleVal = getPenAngleValue(event);
@@ -788,7 +794,7 @@ $(document).ready(async function () {
 
     // 停止繪製
     $canvas.on('mouseup mouseleave touchend pointerup pointerleave', function (event) {
-        if (!isDrawing) return;
+        if (!isDrawing || wmfIpad.ignoreStroke(event)) return;
         isDrawing = false;
 		const { x, y } = getCanvasCoordinates(event);
 		getPressureValue('end', event, x, y);
@@ -818,40 +824,55 @@ $(document).ready(async function () {
 
 		ctx.globalCompositeOperation = "source-over"; // 恢復正常繪圖模式(重要)
         
+        redoStack.length = 0;
         saveToLocalDB(); // 停止繪製時儲存畫布內容到 Local Storage
     });
 
     // 復原功能
+    function restoreCanvas(state) {
+        const img = new Image();
+        img.src = state;
+        img.onload = function () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            saveToLocalDB(); // 復原後更新 Local Storage
+        };
+    }
+
     $('#undoButton').on('click', function () {
         if (undoStack.length > 0) {
-            const lastState = undoStack.pop();
-            const img = new Image();
-            img.src = lastState;
-            img.onload = function () {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0);
-                saveToLocalDB(); // 復原後更新 Local Storage
-            };
+            redoStack.push(canvas.toDataURL());
+            restoreCanvas(undoStack.pop());
+        }
+    });
+
+    $('#redoButton').on('click', function () {
+        if (redoStack.length > 0) {
+            undoStack.push(canvas.toDataURL());
+            restoreCanvas(redoStack.pop());
         }
     });
 
 	// 雙指復原
 	let undoTouchTime = null;
 	$(document).on('touchstart', function (event) {
-		if (event.touches.length === 2) {
-			undoTouchTime = new Date().getTime(); // 記錄雙指觸控的時間
+		if (wmfIpad.fingerCount(event) === 2) {
+			const onCanvas = $(event.target).closest('#canvas-container').length > 0;
+			undoTouchTime = onCanvas && !strokeCancelled ? new Date().getTime() : null; // 記錄雙指觸控的時間
+			strokeCancelled = false;
 		}
 	}).on('touchend', function (event) {
 		if (undoTouchTime && !wmfIpad.didPinch() && new Date().getTime() - undoTouchTime < 250) { // 如果雙指觸控時間夠短
 			$('#undoButton').trigger('click');
-			undoTouchTime = null;
 		}
+		undoTouchTime = null;
 	});
 
 	// 清除畫布的功能
 	$('#clearButton').on('click', async function () {
 		const savedCanvas = await loadFromDB('g_' + nowGlyph);
 		if (!savedCanvas) return; // 如果沒有儲存的畫布，則不進行任何操作
+		redoStack.length = 0;
 		undoStack.push(canvas.toDataURL()); // 儲存當前畫布狀態到 undoStack
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
@@ -863,6 +884,7 @@ $(document).ready(async function () {
 	async function moveGlyph(xoff, yoff) {
 		const savedCanvas = await loadFromDB('g_' + nowGlyph);
 		if (!savedCanvas) return; // 如果沒有儲存的畫布，則不進行任何操作
+		redoStack.length = 0;
 		undoStack.push(canvas.toDataURL()); // 儲存當前畫布狀態到 undoStack
 
 		const img = new Image();
@@ -923,6 +945,7 @@ $(document).ready(async function () {
 		change(zoomState);
 		const { source, discs, ax, ay, ix, iy, angle, fx, fy, weight, radius } = zoomState;
 		if (fx == oldX && fy == oldY && weight == oldWeight && angle == oldAngle) return;
+		redoStack.length = 0;
 		undoStack.push(current); // 儲存當前畫布狀態到 undoStack
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);

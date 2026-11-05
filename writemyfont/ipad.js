@@ -62,26 +62,32 @@ const wmfIpad = (function () {
 
 	// ---------- 雙指縮放 ----------
 	const pinch = { active: false, startDist: 0, startBox: 0, moved: false };
-	function touchDist(e) {
-		return Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+	function fingers(e) {
+		const touches = (e.originalEvent || e).touches;
+		return touches ? Array.from(touches).filter(function (t) { return t.touchType !== 'stylus'; }) : [];
+	}
+	function touchDist(list) {
+		return Math.hypot(list[0].clientX - list[1].clientX, list[0].clientY - list[1].clientY);
 	}
 	function inPinchArea(target) {
 		return target.closest && !target.closest('.dialog, #wmf-preview, #list-container');
 	}
 	function initPinch() {
 		document.addEventListener('touchstart', function (e) {
-			if (e.touches.length === 2 && inPinchArea(e.target)) {
+			const list = fingers(e);
+			if (list.length === 2 && e.touches.length === 2 && inPinchArea(e.target)) {
 				pinch.active = true;
 				pinch.moved = false;
-				pinch.startDist = touchDist(e);
+				pinch.startDist = touchDist(list);
 				pinch.startBox = currentBox();
 			}
 		}, { capture: true, passive: true });
 
 		document.addEventListener('touchmove', function (e) {
-			if (!pinch.active || e.touches.length < 2) return;
+			const list = fingers(e);
+			if (!pinch.active || list.length < 2) return;
 			e.preventDefault();
-			const dist = touchDist(e);
+			const dist = touchDist(list);
 			if (Math.abs(dist - pinch.startDist) > 12) pinch.moved = true;
 			if (pinch.moved) setBox(pinch.startBox * dist / pinch.startDist, false);
 		}, { capture: true, passive: false });
@@ -496,6 +502,7 @@ const wmfIpad = (function () {
 
 	return {
 		ignoreStroke: ignoreStroke,
+		fingerCount: function (e) { return fingers(e).length; },
 		inkRadius: inkRadius,
 		inkDiscs: inkDiscs,
 		drawDiscs: drawDiscs,
